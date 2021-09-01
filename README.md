@@ -20,7 +20,7 @@ They are divided in 3 sub-categories:
 ## Creational patterns
 
 <a name="factory"></a> 
-### Factory pattern ^[\^](#index)^
+### Factory pattern [\^](#index)
 
 #### Problem
 You have a logistic application - everything is transported by trucks so all the code lives in `Truck` class.
@@ -116,7 +116,7 @@ Sending package via ship!
 ---
 
 <a name="abstractfactory"></a>
-## Abstract Factory ^[\^](#index)^
+## Abstract Factory [\^](#index)
 
 ### Problem
 You have a forniture shop which sells sofas and tables. Each of one of these items comes in different flavours, ancient and modern.
@@ -271,7 +271,7 @@ This is an ancient table!
 ---
 
 <a name="builder"></a>
-## Builder ^[\^](#index)^
+## Builder [\^](#index)
 
 ### Problem
 Your application needs to build an house. An house can be as much as simple as 4 walls, a roof, windows and a door, or it can have a pool, a garden, a garage and so on...
@@ -422,7 +422,7 @@ As the logic increases and become complex, the director is useful because instea
 ---
 
 <a name="prototype"></a>
-## Prototype ^[\^](#index)^
+## Prototype [\^](#index)
 
 ### Problem
 
@@ -502,7 +502,7 @@ Person [id=1, name=John, surname=Doe, isCloned=false]
 ---
 
 <a name="singleton"></a>
-## Singleton ^[\^](#index)^
+## Singleton [\^](#index)
 
 ### The problem
 
