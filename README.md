@@ -7,11 +7,20 @@ They are divided in 3 sub-categories:
 * Structural patterns are about organizing different classes and objects to form larger structures and provide new functionality
 * Behavioral patterns are about identifying common communication patterns between objects and realize these patterns.
 
+<a name="index"></a>
+1. Creational patterns
+    1. [Factory pattern](#factory)
+    2. [Abstract Factory](#abstractfactory)
+    3. [Builder](#builder)
+    4. [Prototype](#prototype)
+    5. [Singleton](#singleton)
+
 ---
 
 ## Creational patterns
 
-### Factory pattern
+<a name="factory"></a> 
+### Factory pattern ^[\^](#index)^
 
 #### Problem
 You have a logistic application - everything is transported by trucks so all the code lives in `Truck` class.
@@ -106,7 +115,8 @@ Sending package via ship!
 
 ---
 
-## Abstract Factory
+<a name="abstractfactory"></a>
+## Abstract Factory ^[\^](#index)^
 
 ### Problem
 You have a forniture shop which sells sofas and tables. Each of one of these items comes in different flavours, ancient and modern.
@@ -260,7 +270,8 @@ This is an ancient table!
 
 ---
 
-## Builder
+<a name="builder"></a>
+## Builder ^[\^](#index)^
 
 ### Problem
 Your application needs to build an house. An house can be as much as simple as 4 walls, a roof, windows and a door, or it can have a pool, a garden, a garage and so on...
@@ -410,7 +421,8 @@ As the logic increases and become complex, the director is useful because instea
 
 ---
 
-## Prototype
+<a name="prototype"></a>
+## Prototype ^[\^](#index)^
 
 ### Problem
 
@@ -489,7 +501,8 @@ Person [id=1, name=John, surname=Doe, isCloned=false]
 
 ---
 
-## Singleton
+<a name="singleton"></a>
+## Singleton ^[\^](#index)^
 
 ### The problem
 
