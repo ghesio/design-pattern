@@ -14,6 +14,8 @@ They are divided in 3 sub-categories:
     3. [Builder](#builder)
     4. [Prototype](#prototype)
     5. [Singleton](#singleton)
+2. Structural patterns
+    1. [Adapter pattern](#adapter)
 
 ---
 
@@ -33,7 +35,7 @@ The factory method suggest that the object creation is moved from the constructo
 We write the `TransportInterface` interface with `sendPackage()` method. The `Truck` and `Ship` classes will extend this interface.
 
 **TransportInterface**:
-```
+```java
 public interface TransportInterface {	
 
 	public void sendPackage();
@@ -42,7 +44,7 @@ public interface TransportInterface {
 ```
 
 **Truck**:
-```
+```java
 public class Truck implements TransportInterface {
 	
 	// field, getters and setters
@@ -56,7 +58,7 @@ public class Truck implements TransportInterface {
 ```
 
 **Ship**:
-```
+```java
 public class Ship implements TransportInterface {
 	
 	// field, getters and setters
@@ -71,7 +73,7 @@ public class Ship implements TransportInterface {
 We then define the factory class `TransportFactory` which will be responsible for creating instances of `Transport` concrete implementations.
 
 **TransportFactory**:
-```
+```java
 public class TransportFactory {
 	
 	// based on which type of transport it's needed return it
@@ -92,7 +94,7 @@ public class TransportFactory {
 
 Our application then will work this way:
 
-```
+```java
 // get a truck
 TransportFactory.getTransport("truck").sendPackage();
 // get a ship
@@ -129,7 +131,7 @@ The first thing the Abstract Factory pattern suggests is to explicitly declare i
 Then all variants of products follow those interfaces i.e. all chair variants implement the Chair interface, all table variants implement the Table interface and so on.
 
 **ChairInterface**:
-```
+```java
 public interface ChairInterface {
 
 	// print the type of chair
@@ -139,7 +141,7 @@ public interface ChairInterface {
 ```
 
 **AncientChair**:
-```
+```java
 public class AncientChair implements ChairInterface {
 
 	@Override
@@ -151,7 +153,7 @@ public class AncientChair implements ChairInterface {
 ```
 
 **ModernChair**:
-```
+```java
 public class ModernChair implements ChairInterface {
 
 	@Override
@@ -167,7 +169,7 @@ Table interface and implementation is omitted as it follows the chair one.
 A `FornitureAbstractFactory` interface which will be the abstract factory and two factories implementation are created.
 
 **FornitureAbstractFactory**:
-```
+```java
 public interface FornitureAbstractFactory {
 	
 	public ChairInterface getChair();
@@ -178,7 +180,7 @@ public interface FornitureAbstractFactory {
 ```
 
 **AncientFactory**:
-```
+```java
 public class AncientFactory implements FornitureAbstractFactory {
 
 	@Override
@@ -195,7 +197,7 @@ public class AncientFactory implements FornitureAbstractFactory {
 ``````
 
 **ModernFactory**:
-```
+```java
 public class ModernFactory implements FornitureAbstractFactory {
 
 	@Override
@@ -213,7 +215,7 @@ public class ModernFactory implements FornitureAbstractFactory {
 
 The application will then define which type of factory is needed:
 
-```
+```java
 public class Application {
 
 	private static FornitureAbstractFactory factory;
@@ -289,7 +291,7 @@ The builder pattern suggests that you extract the object construction code out o
 
 Let's start by defining the house object:
 **House**:
-```
+```java
 public class House {
 
 	// some example fields
@@ -334,7 +336,7 @@ public class House {
 
 The `HouseBuilder` has methods to set all the properties of an house and to return it (the object is inaccessible during construction):
 **HouseBuilder**:
-```
+```java
 public class HouseBuilder {
 
 	private House house = new House();
@@ -380,7 +382,7 @@ public class HouseBuilder {
 ```
 
 Our application then can arbitrarily build what it needs:
-```
+```java
 // instantiate a builder
 HouseBuilder builder = new HouseBuilder();
 // get a default house
@@ -396,7 +398,7 @@ System.out.println(bigger);
 ```
 
 Here we see why every method in the `HouseBuilder` returns `this`. Common build routines can be extracted to a *director*
-```
+```java
 public class HouseDirector {
 	
 	private static HouseBuilder builder = new HouseBuilder();
@@ -442,7 +444,7 @@ The pattern declares a common interface for all objects that support cloning.
 This interface lets you clone an object without coupling your code to the class of that object. Usually, such an interface contains just the single `clone` method. In Java simply use the `java.lang.Cloneable` interface.
 
 **Person**:
-```
+```java
 public class Person implements Cloneable {
 	
 	private int id;
@@ -472,7 +474,7 @@ public class Person implements Cloneable {
 ```
 
 **Application**:
-```
+```java
   // assume that there is some private logic to fill the class values other than this constructor
   Person myPerson = new Person(1, "John", "Doe");
   // clone him
@@ -520,7 +522,7 @@ There are some way to implement this pattern.
 #### Eager singleton
 
 The instance is created at class load via a constructor:
-```
+```java
 public class EagerSingleton {
 	
 	private static EagerSingleton instance = new EagerSingleton();
@@ -536,7 +538,7 @@ public class EagerSingleton {
 ```
 
 or via a static block which permits exception handling:
-```
+```java
 public class StaticSingleton {
 
     private static StaticSingleton instance;
@@ -563,7 +565,7 @@ public class StaticSingleton {
 
 The instance is created when it's neede, in other words at the first `getInstance` call.
 
-```
+```java
 public class LazySingleton {
 
 	private static LazySingleton instance;
@@ -582,7 +584,7 @@ public class LazySingleton {
 This is correct, but it's not thread safe in multithreading enviroment. In that case we use a *
 Double-Checked Locking* implementation.
 
-```
+```java
 public class LazySynchronizedSingleton {
 
 	private static LazySynchronizedSingleton instance;
@@ -606,7 +608,7 @@ public class LazySynchronizedSingleton {
 
 **Thread-safe, but with overhead**
 
-```
+```java
 public class ThreadSafeSingleton {
 
     private static ThreadSafeSingleton instance;
@@ -625,7 +627,7 @@ public class ThreadSafeSingleton {
 Every time we get an instance we have a useless overhead acquiring the lock (it is useful only for first calls when the instance is still `null`)
 
 **On demand initialization**
-```
+```java
 public class InitOnDemandSingleton {
     private static class InstanceHolder {
         private static final InitOnDemandSingleton INSTANCE = new InitOnDemandSingleton();
@@ -637,7 +639,7 @@ public class InitOnDemandSingleton {
 ```
 
 **ENUM implementation**:
-```
+```java
 public enum EnumSingleton {
     INSTANCE;
 
@@ -654,3 +656,167 @@ public enum EnumSingleton {
 **\-** The Singleton pattern can mask bad design, for instance, when the components of the program know too much about each other
 **\-** The pattern requires special treatment in a multithreaded environment so that multiple threads won’t create a singleton object several times
 **\-** It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just don’t write the tests ;)
+
+---
+---
+
+## Structural patterns
+
+<a name="adapter"></a>
+## Adapter pattern [\^](#index)
+
+### The problem
+
+Your application mock how a wall charger works. You have a tension of 230V but you need to be able to charge at 5V, 10V and 23V. This is a perfect example of adapter pattern!
+
+### The solution
+
+Let's start by defining `Volt` class:
+```java
+public class Volt {
+
+	private int volts;
+	
+	public Volt(int v){
+		this.volts=v;
+	}
+
+	public int getVolts() {
+		return volts;
+	}
+
+	public void setVolts(int volts) {
+		this.volts = volts;
+	}
+	
+}
+```
+
+and the `Socket` class, which erogates 230V:
+
+```java
+public class Socket {
+
+	public Volt getVolt(){
+		return new Volt(230);
+	}
+}
+```
+
+We now instantiate the `SocketAdapter` interface:
+
+```java
+public interface SocketAdapter {
+
+	public Volt get230Volt();
+		
+	public Volt get23Volt();
+	
+	public Volt get10Volt();
+	
+	public Volt get5Volt();
+
+}
+```
+
+#### Class inheritance approach
+
+This approach uses inheritance:
+
+```java
+public class ClassSocketAdapter extends Socket implements SocketAdapter{
+
+	@Override
+	public Volt get230Volt() {
+		return getVolt();
+	}
+
+	@Override
+	public Volt get23Volt() {
+		Volt v= getVolt();
+		return convertVolt(v,10);
+	}
+
+	@Override
+	public Volt get10Volt() {
+		Volt v= getVolt();
+		return convertVolt(v,23);
+	}
+	
+	@Override
+	public Volt get5Volt() {
+		Volt v= getVolt();
+		return convertVolt(v,46);
+	}
+	
+	private Volt convertVolt(Volt v, int i) {
+		return new Volt(v.getVolts()/i);
+	}
+
+}
+```
+#### Object composition approach
+
+This approach uses composition:
+```java
+public class ObjectSocketAdapter implements SocketAdapter {
+
+	// Using composition for adapter pattern
+	private Socket socket = new Socket();
+
+	@Override
+	public Volt get230Volt() {
+		return socket.getVolt();
+	}
+
+	@Override
+	public Volt get23Volt() {
+		Volt v = socket.getVolt();
+		return convertVolt(v, 10);
+	}
+
+	@Override
+	public Volt get10Volt() {
+		Volt v = socket.getVolt();
+		return convertVolt(v, 23);
+	}
+
+	@Override
+	public Volt get5Volt() {
+		Volt v = socket.getVolt();
+		return convertVolt(v, 46);
+	}
+
+	private Volt convertVolt(Volt v, int i) {
+		return new Volt(v.getVolts() / i);
+	}
+
+}
+```
+
+Both approaches are good (note that we can transform the interface in abstract class and extract the method `convertVolt` there)
+
+Our application will work this way:
+```java
+  SocketAdapter objectAdapter = new ObjectSocketAdapter();
+  System.out.println(objectAdapter.get5Volt().getVolts() + " V");
+  
+  SocketAdapter classAdapter = new ClassSocketAdapter();
+  System.out.println(classAdapter.get23Volt().getVolts() + " V");
+```
+
+which output:
+```
+5 V
+23 V
+```
+
+### Pros and Cons
+
+**\+** you can separate the interface or data conversion code from the primary business logic of the program
+**\+** you can introduce new types of adapters into the program without breaking the existing client code, as long as they work with the adapters through the client interface
+
+**\-** The overall complexity of the code increases because you need to introduce a set of new interfaces and classes. Sometimes it’s simpler just to change the service class so that it matches the rest of your code
+
+---
+
