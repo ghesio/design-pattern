@@ -703,7 +703,7 @@ public class Socket {
 }
 ```
 
-We now instantiate the `SocketAdapter` interface:
+We now declare the `SocketAdapter` interface:
 
 ```java
 public interface SocketAdapter {
