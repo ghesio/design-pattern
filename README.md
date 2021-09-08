@@ -17,6 +17,7 @@ They are divided in 3 sub-categories:
 2. Structural patterns
     1. [Adapter pattern](#adapter)
     2. [Bridge pattern](#bridge)
+    3. [Composite pattern](#composite)
 
 ---
 
@@ -945,4 +946,99 @@ Circle filled with color blue
 **\-** You might make the code more complicated by applying the pattern to a highly cohesive class
 
 ---
+
+<a name="composite"></a>
+## Composite pattern [\^](#index)
+
+### The problem
+
+Your application has a shopping section which handles orders represented by boxes and products. 
+A boxes can contain a product or more, product(s) and box(es) which can also contain(s) more product(s).
+What is the easiest way to calculate the price of the items inside a box?
+
+### The solution
+
+We define the `Box` and `Product` class which will extends/implement an abstract class/an interface which has a method for calculating the price.
+The product will simply return the product price while the box will iterate through all the products inside it.
+
+```java
+public interface ItemInterface {
+	
+	public Double getPrice();
+	
+}
+```
+
+```java
+public class Box implements ItemInterface {
+	
+	private final List<ItemInterface> items = new ArrayList<ItemInterface>();
+	
+	public void addItem(final ItemInterface item) {
+		this.items.add(item);
+	}
+	
+	public void clear() {
+		this.items.clear();
+	}
+	
+	public void removeItem(final ItemInterface item) {
+		this.items.remove(item);
+	}
+	
+	@Override
+	public Double getPrice() {
+		return this.items.isEmpty() ? 0d : this.items.stream().collect(Collectors.summingDouble(i -> i.getPrice()));
+	}
+
+}
+```
+
+```java
+public class ProductA implements ItemInterface {
+	
+	private final double price = 10.5d;
+	
+	@Override
+	public Double getPrice() {
+		return price;
+	}
+
+}
+```
+
+```java
+public class ProductB implements ItemInterface {
+	
+	private final double price = 5.5f;
+	
+	@Override
+	public Double getPrice() {
+		return price;
+	}
+
+}
+```
+
+our cart can then be something like this:
+```java
+Box bigBox = new Box();
+bigBox.addItem(new ProductA());
+bigBox.addItem(new ProductB());
+Box smallBox = new Box();
+smallBox.addItem(new ProductA());
+bigBox.addItem(smallBox);
+System.out.println(bigBox.getPrice());
+```
+which output the correct value of `26.5`
+
+### Pros and Cons
+
+**\+** You can work with complex tree/hierarchical structures more conveniently: use polymorphism and recursion to your advantage
+**\+** You can introduce new element types into the app without breaking the existing code, which now works with the object tree
+
+**\-** It might be difficult to provide a common interface for classes whose functionality differs too much: you would need to overgeneralize the component interface, making it harder to comprehend.
+
+---
+
 
