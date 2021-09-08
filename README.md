@@ -16,6 +16,7 @@ They are divided in 3 sub-categories:
     5. [Singleton](#singleton)
 2. Structural patterns
     1. [Adapter pattern](#adapter)
+    2. [Bridge pattern](#bridge)
 
 ---
 
@@ -433,8 +434,8 @@ How would you do it? First, you have to create a new object of the same class. T
 new object.
 
 There are few problems:
- * not all objects can be copied that way because some of the objectâ€™s fields may be private and not visible from outside of the object itself.
-* you have to know the objectâ€™s class to create a duplicate so your code becomes dependent on that class
+ * not all objects can be copied that way because some of the object’s fields may be private and not visible from outside of the object itself.
+* you have to know the object’s class to create a duplicate so your code becomes dependent on that class
 * sometimes you only know the interface that the object follows, but not its concrete class, when, for example, a parameter in a method accepts any objects that follow some interface
 
 ### Solution
@@ -651,11 +652,11 @@ public enum EnumSingleton {
 
 **\+** You can be sure that a class has only a single instance
 **\+** You gain a global access point to that instance
-**\+** If using the lazy implementation the singleton object is initialized only when itâ€™s requested for the first time
+**\+** If using the lazy implementation the singleton object is initialized only when it’s requested for the first time
 
 **\-** The Singleton pattern can mask bad design, for instance, when the components of the program know too much about each other
-**\-** The pattern requires special treatment in a multithreaded environment so that multiple threads wonâ€™t create a singleton object several times
-**\-** It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just donâ€™t write the tests ;)
+**\-** The pattern requires special treatment in a multithreaded environment so that multiple threads won’t create a singleton object several times
+**\-** It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just don’t write the tests ;)
 
 ---
 ---
@@ -816,7 +817,132 @@ which output:
 **\+** you can separate the interface or data conversion code from the primary business logic of the program
 **\+** you can introduce new types of adapters into the program without breaking the existing client code, as long as they work with the adapters through the client interface
 
-**\-** The overall complexity of the code increases because you need to introduce a set of new interfaces and classes. Sometimes itâ€™s simpler just to change the service class so that it matches the rest of your code
+**\-** The overall complexity of the code increases because you need to introduce a set of new interfaces and classes. Sometimes it’s simpler just to change the service class so that it matches the rest of your code
+
+---
+
+<a name="bridge"></a>
+## Bridge pattern [\^](#index)
+
+### The problem
+
+In your application lives a `Shape` interface which is implemented by a couple of shapes like `Square` and `Circle`. Say you need to draw red and blue circle. One approach would be to create a `BlueCircle` and a `RedCircle`.
+This is not good because class will grow exponentially when adding a yellow color and a `Triangle`
+
+### The solution
+
+This problem occurs because we’re trying to extend the shape classes in two independent dimensions: by form and by color - a very common issue with class inheritance.
+
+The Bridge pattern attempts to solve this problem by switching from inheritance to composition: one dimension is extracted into a separate class hierarchy, so that the original classes will reference an object of the new hierarchy, instead of having all of its state and behaviors within one class.
+
+Following this approach, we can extract the color-related code into its own class with two subclasses:
+`Red` and `Blue` . The Shape class then gets a reference field pointing to one of the color objects delegating any color-related work to the linked color object. 
+
+That reference will act as a bridge between the `Shape` and `Color` classes: adding new colors won’t require changing the shape hierarchy, and viceversa.
+
+Let's start by defining the `Color` interface which will have a `paint()` method:
+
+```java
+public interface Color {
+	
+	public void paint();
+
+}
+```
+
+and the `RedColor`, `BlueColor` classes:
+
+```java
+public class RedColor implements Color {
+
+	@Override
+	public void paint() {
+		System.out.println("red");
+	}
+
+}
+```
+```java
+public class BlueColor implements Color {
+
+	@Override
+	public void paint() {
+		System.out.println("blue");
+	}
+
+}
+```
+
+Then let's define the `Shape` abstract class, which will have a `Color`, bridging the shape with the color
+
+```java
+public abstract class Shape {
+	
+	protected Color color;
+	
+	public Shape(final Color c) {
+		this.color = c;
+	}
+	
+	public abstract void draw();
+
+}
+```
+
+and the `Square`, `Circle` classes:
+
+```java
+public class Circle extends Shape {
+
+	public Circle(Color c) {
+		super(c);
+	}
+
+	@Override
+	public void draw() {
+		System.out.print("Circle filled with color ");
+		color.paint();
+	}
+
+}
+```
+```java
+public class Square extends Shape {
+
+	public Square(Color c) {
+		super(c);
+	}
+
+	@Override
+	public void draw() {
+		System.out.print("Square filled with color ");
+		color.paint();
+	}
+
+}
+```
+
+Our application will work this way:
+```java
+Shape redSquare = new Square(new RedColor());
+redSquare.draw();
+Shape blueCircle = new Circle(new BlueColor());
+blueCircle.draw();
+```
+
+outputting:
+```
+Square filled with color red
+Circle filled with color blue
+```
+### Pros and Cons
+
+**\+** You can create platform-independent classes and apps
+**\+** The client code works with high-level abstractions and it's notexposed to the platform details.
+**\+** You can introduce new abstractions and implementations independently from each other
+**\+** You can focus on high-level logic in the abstraction and on platform details in the implementation
+
+**\-** You might make the code more complicated by applying the pattern to a highly cohesive class
 
 ---
 
