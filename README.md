@@ -1175,10 +1175,14 @@ Sending sms to +1 515-JAVA
 ### Pros and Cons
 
 **\+** an object's behavior can be extended without making a new subclass
+
 **\+** You can add or remove responsibilities from an object at runtime
+
 **\+** Several behaviors can be combined by combining different decorators
 
+
 **\-** it's hard to remove a specific wrapper from the wrappers stack.
+
 **\-** it's hard to implement a decorator in such a way that its behavior doesn't depend on the order in the decorators stack
 
 ---
