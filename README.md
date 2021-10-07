@@ -18,6 +18,8 @@ They are divided in 3 sub-categories:
     1. [Adapter pattern](#adapter)
     2. [Bridge pattern](#bridge)
     3. [Composite pattern](#composite)
+    4. [Decorator pattern](#decorator)
+
 
 ---
 
@@ -1042,3 +1044,141 @@ which output the correct value of `26.5`
 ---
 
 
+<a name="decorator"></a>
+## Decorator pattern [\^](#index)
+
+### The problem
+
+You are working on a notification library that notify user by sending emails, using a simple `Notifier` class which has a `notify()` method.
+
+At some point you need to implement an SMS sender class, so te original class becomes an interface implemented by `EmailNotifier` and `SmsNotifier`, both of them implementing the `send()` method.
+Business user then needs to receiver notification on Facebook (`FacebookNotifier`) and Slack (`SlackNotifier`).
+
+How hard can it be? Then you realize that someone may needs more than one notification type at once for a given event (if your production server explodes you want to be notified on every avalaible channel), leading to an explosion of combinations of the notifiers.
+
+We need to find a way to modify the entity behaviour (in our case the notifier) at runtime, by "decorating" with the notification needed.
+
+### The solution
+
+
+We implement the `Notifier` interface, with a single `notifyMessage` method - `notify` is a reserved method in Java ;)
+
+```java
+public interface Notifier {
+	
+	public void notifyMessage();
+
+}
+```
+
+We then choose a basic implementation, which contains something that must be done every time (send the email)
+
+ `EmailNotifier`:
+```java
+public class EmailNotifier implements Notifier {
+
+	private String email;
+	
+	public EmailNotifier(final String email) {
+		this.email = email;
+	}
+	
+	@Override
+	public void notifyMessage() {
+		System.out.println("Sending email notification to " + email);
+	}
+
+}
+```
+
+We then proceed to implement the decorator itself, the `NotifierDecorator`:
+
+```java
+public abstract class NotifierDecorator implements Notifier {
+	private final Notifier decoratedNotifier;
+	
+	protected NotifierDecorator(Notifier notifier) {
+		this.decoratedNotifier = notifier;
+	}
+	
+	@Override
+	public void notifyMessage() {
+		this.decoratedNotifier.notifyMessage();
+	}
+	
+}
+```
+
+The `SmsNotifier` and `SlackNotifier` will extends the decorator class:
+
+```java
+public class SmsNotifier extends NotifierDecorator {
+
+	private String phoneNumber;
+	
+	public SmsNotifier(Notifier notifier, final String phoneNumber) {
+		super(notifier);
+		this.phoneNumber = phoneNumber;
+	}
+	
+	
+	@Override
+	public void notifyMessage() {
+		System.out.println("Sending sms to " + phoneNumber);
+	}
+
+}
+```
+```java
+public class SlackNotifier extends NotifierDecorator {
+
+	private String slackUser;
+	
+	public SlackNotifier(Notifier notifier, final String slackUser) {
+		super(notifier);
+		this.slackUser = slackUser;
+	}
+	
+	@Override
+	public void notifyMessage() {
+		System.out.println("Sending slack notification to " + slackUser);
+	}
+
+}
+```
+
+Our application then can simply call the notifier needed without bloating the code:
+
+```java
+final String emailAddress = "bogus@binted.com";
+final String slackUser = "@binted";
+final String phoneNumber = "+1 515-JAVA";
+
+Notifier notifier = new EmailNotifier(emailAddress);
+notifier.notifyMessage();
+notifier = new SlackNotifier(notifier, slackUser);
+notifier.notifyMessage();
+notifier = new SmsNotifier(notifier, phoneNumber);
+notifier.notifyMessage();
+
+```
+
+which will output:
+
+```
+Sending email notification to bogus@binted.com
+Sending slack notification to @binted
+Sending sms to +1 515-JAVA
+
+```
+
+### Pros and Cons
+
+**\+** an object’s behavior can be extended without making a new subclass
+**\+** You can add or remove responsibilities from an object at runtime
+**\+** Several behaviors can be combined by combining different decorators
+
+**\-** it’s hard to remove a specific wrapper from the wrappers stack.
+**\-** it’s hard to implement a decorator in such a way that its behavior doesn’t depend on the order in the decorators stack
+
+---
