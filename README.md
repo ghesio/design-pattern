@@ -119,6 +119,9 @@ Sending package via ship!
 
 **\-** The code may become more complicated since it's needed to create new subclasses to implement the pattern
 
+### UML
+![](img/factory.png)
+
 ---
 
 <a name="abstractfactory"></a>
@@ -274,6 +277,11 @@ This is an ancient table!
 
 **\-** The code becomes more complicated since it's needed to create new interfaces and factories
 
+### UML
+![](img/abstract_factory.png)
+![](img/abstract_factory1.png)
+![](img/abstract_factory2.png)
+
 ---
 
 <a name="builder"></a>
@@ -425,6 +433,9 @@ As the logic increases and become complex, the director is useful because instea
 
 **\-** The overall complexity of the code increases since the pattern requires creating multiple new classes.
 
+### UML
+![](img/builder.png)
+
 ---
 
 <a name="prototype"></a>
@@ -504,6 +515,9 @@ Person [id=1, name=John, surname=Doe, isCloned=false]
 **\+** you can produce complex objects more conveniently
 
 **\-** cloning complex objects that have circular references is very tricky
+
+### UML
+![](img/prototype.png)
 
 ---
 
@@ -660,6 +674,9 @@ public enum EnumSingleton {
 **\-** The Singleton pattern can mask bad design, for instance, when the components of the program know too much about each other
 **\-** The pattern requires special treatment in a multithreaded environment so that multiple threads won’t create a singleton object several times
 **\-** It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just don’t write the tests ;)
+
+### UML
+![](img/singleton.png)
 
 ---
 ---
@@ -822,6 +839,10 @@ which output:
 
 **\-** The overall complexity of the code increases because you need to introduce a set of new interfaces and classes. Sometimes it’s simpler just to change the service class so that it matches the rest of your code
 
+
+### UML
+![](img/adapter.png)
+
 ---
 
 <a name="bridge"></a>
@@ -947,8 +968,10 @@ Circle filled with color blue
 
 **\-** You might make the code more complicated by applying the pattern to a highly cohesive class
 
----
+### UML
+![](img/adapter.png)
 
+---
 <a name="composite"></a>
 ## Composite pattern [\^](#index)
 
@@ -1041,8 +1064,11 @@ which output the correct value of `26.5`
 
 **\-** It might be difficult to provide a common interface for classes whose functionality differs too much: you would need to overgeneralize the component interface, making it harder to comprehend.
 
----
 
+### UML
+![](img/composite.png)
+
+---
 
 <a name="decorator"></a>
 ## Decorator pattern [\^](#index)
@@ -1174,11 +1200,14 @@ Sending sms to +1 515-JAVA
 
 ### Pros and Cons
 
-**\+** an object's behavior can be extended without making a new subclass
+**\+** an object’s behavior can be extended without making a new subclass
 **\+** You can add or remove responsibilities from an object at runtime
 **\+** Several behaviors can be combined by combining different decorators
 
-**\-** it's hard to remove a specific wrapper from the wrappers stack.
-**\-** it's hard to implement a decorator in such a way that its behavior doesn't depend on the order in the decorators stack
+**\-** it’s hard to remove a specific wrapper from the wrappers stack.
+**\-** it’s hard to implement a decorator in such a way that its behavior doesn’t depend on the order in the decorators stack
+
+### UML
+![](img/decorator.png)
 
 ---
