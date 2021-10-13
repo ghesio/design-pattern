@@ -969,7 +969,7 @@ Circle filled with color blue
 **\-** You might make the code more complicated by applying the pattern to a highly cohesive class
 
 ### UML
-![](img/adapter.png)
+![](img/bridge.png)
 
 ---
 <a name="composite"></a>
