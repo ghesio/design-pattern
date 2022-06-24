@@ -15,10 +15,12 @@ They are divided in 3 sub-categories:
     4. [Prototype](#prototype)
     5. [Singleton](#singleton)
 2. Structural patterns
-    1. [Adapter pattern](#adapter)
-    2. [Bridge pattern](#bridge)
-    3. [Composite pattern](#composite)
-    4. [Decorator pattern](#decorator)
+    1. [Adapter](#adapter)
+    2. [Bridge](#bridge)
+    3. [Composite](#composite)
+    4. [Decorator](#decorator)
+    5. [Facade](#facade)
+    6. [Flyweight](#flyweight)
 
 
 ---
@@ -27,6 +29,9 @@ They are divided in 3 sub-categories:
 
 <a name="factory"></a> 
 ### Factory pattern [\^](#index)
+
+### Description
+Factory Method is a creational design pattern that provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created.
 
 #### Problem
 You have a logistic application - everything is transported by trucks so all the code lives in `Truck` class.
@@ -114,7 +119,9 @@ Sending package via ship!
 
 ### Pros and Cons
 **\+** Tight coupling between the creator and the concrete products is avoided
+
 **\+** The product creation is only in one point of the program so it's easier to mantain
+
 **\+** It's possible to introduce new type of products in the program without breaking the existent codebase
 
 **\-** The code may become more complicated since it's needed to create new subclasses to implement the pattern
@@ -126,6 +133,10 @@ Sending package via ship!
 
 <a name="abstractfactory"></a>
 ## Abstract Factory [\^](#index)
+
+### Description
+Abstract Factory is a creational design pattern that lets you produce families of related objects without specifying their concrete classes.
+
 
 ### Problem
 You have a forniture shop which sells sofas and tables. Each of one of these items comes in different flavours, ancient and modern.
@@ -271,8 +282,11 @@ This is an ancient table!
 ### Pros and Cons
 
 **\+** Products from different factories are compatible with each other
+
 **\+** Tight coupling between the creator and the concrete products is avoided
+
 **\+** The product creation is only in one point of the program so it's easier to mantain
+
 **\+** It's possible to introduce new type of products in the program without breaking the existent codebase
 
 **\-** The code becomes more complicated since it's needed to create new interfaces and factories
@@ -286,6 +300,10 @@ This is an ancient table!
 
 <a name="builder"></a>
 ## Builder [\^](#index)
+
+### Description
+Builder is a creational design pattern that lets you construct complex objects step by step. 
+The pattern allows you to produce different types and representations of an object using the same construction code.
 
 ### Problem
 Your application needs to build an house. An house can be as much as simple as 4 walls, a roof, windows and a door, or it can have a pool, a garden, a garage and so on...
@@ -428,7 +446,9 @@ As the logic increases and become complex, the director is useful because instea
 ### Pros and Cons
 
 **\+** Object can be constructed step-by-step, construction can be defered or steps can be run recursively
+
 **\+** Same construction code when building various representations of products can be reused
+
 **\+** Complex construction code is isolated from application business logic
 
 **\-** The overall complexity of the code increases since the pattern requires creating multiple new classes.
@@ -441,6 +461,8 @@ As the logic increases and become complex, the director is useful because instea
 <a name="prototype"></a>
 ## Prototype [\^](#index)
 
+### Description
+Prototype is a creational design pattern that lets you copy existing objects without making your code dependent on their classes.
 ### Problem
 
 Say you need to create an exact copy of an object. 
@@ -511,7 +533,9 @@ Person [id=1, name=John, surname=Doe, isCloned=false]
 
 ### Pros and Cons
 **\+** you can clone objects without coupling to their concrete classes
+
 **\+** you can get rid of repeated initialization code in favor of cloning pre-built prototypes
+
 **\+** you can produce complex objects more conveniently
 
 **\-** cloning complex objects that have circular references is very tricky
@@ -523,6 +547,9 @@ Person [id=1, name=John, surname=Doe, isCloned=false]
 
 <a name="singleton"></a>
 ## Singleton [\^](#index)
+### Description
+
+Singleton is a creational design pattern that lets you ensure that a class has only one instance, while providing a global access point to this instance.
 
 ### The problem
 
@@ -599,8 +626,7 @@ public class LazySingleton {
 }
 ```
 
-This is correct, but it's not thread safe in multithreading enviroment. In that case we use a *
-Double-Checked Locking* implementation.
+This is correct, but it's not thread safe in multithreading enviroment. In that case we use a *Double-Checked Locking* implementation.
 
 ```java
 public class LazySynchronizedSingleton {
@@ -668,12 +694,17 @@ public enum EnumSingleton {
 ### Pros and Cons
 
 **\+** You can be sure that a class has only a single instance
+
 **\+** You gain a global access point to that instance
+
 **\+** If using the lazy implementation the singleton object is initialized only when it’s requested for the first time
 
 **\-** The Singleton pattern can mask bad design, for instance, when the components of the program know too much about each other
+
 **\-** The pattern requires special treatment in a multithreaded environment so that multiple threads won’t create a singleton object several times
+
 **\-** It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just don’t write the tests ;)
+
 
 ### UML
 ![](img/singleton.png)
@@ -685,6 +716,9 @@ public enum EnumSingleton {
 
 <a name="adapter"></a>
 ## Adapter pattern [\^](#index)
+
+### Description
+Adapter is a structural design pattern that allows objects with incompatible interfaces to collaborate.
 
 ### The problem
 
@@ -740,7 +774,7 @@ public interface SocketAdapter {
 }
 ```
 
-#### Class inheritance approach
+### Class inheritance approach
 
 This approach uses inheritance:
 
@@ -776,7 +810,7 @@ public class ClassSocketAdapter extends Socket implements SocketAdapter{
 
 }
 ```
-#### Object composition approach
+### Object composition approach
 
 This approach uses composition:
 ```java
@@ -835,6 +869,7 @@ which output:
 ### Pros and Cons
 
 **\+** you can separate the interface or data conversion code from the primary business logic of the program
+
 **\+** you can introduce new types of adapters into the program without breaking the existing client code, as long as they work with the adapters through the client interface
 
 **\-** The overall complexity of the code increases because you need to introduce a set of new interfaces and classes. Sometimes it’s simpler just to change the service class so that it matches the rest of your code
@@ -847,7 +882,8 @@ which output:
 
 <a name="bridge"></a>
 ## Bridge pattern [\^](#index)
-
+### Description
+Bridge is a structural design pattern that lets you split a large class or a set of closely related classes into two separate hierarchies—abstraction and implementation—which can be developed independently of each other.
 ### The problem
 
 In your application lives a `Shape` interface which is implemented by a couple of shapes like `Square` and `Circle`. Say you need to draw red and blue circle. One approach would be to create a `BlueCircle` and a `RedCircle`.
@@ -962,8 +998,11 @@ Circle filled with color blue
 ### Pros and Cons
 
 **\+** You can create platform-independent classes and apps
+
 **\+** The client code works with high-level abstractions and it's notexposed to the platform details.
+
 **\+** You can introduce new abstractions and implementations independently from each other
+
 **\+** You can focus on high-level logic in the abstraction and on platform details in the implementation
 
 **\-** You might make the code more complicated by applying the pattern to a highly cohesive class
@@ -974,6 +1013,8 @@ Circle filled with color blue
 ---
 <a name="composite"></a>
 ## Composite pattern [\^](#index)
+### Description
+Composite is a structural design pattern that lets you compose objects into tree structures and then work with these structures as if they were individual objects.
 
 ### The problem
 
@@ -1013,7 +1054,7 @@ public class Box implements ItemInterface {
 	
 	@Override
 	public Double getPrice() {
-		return this.items.isEmpty() ? 0d : this.items.stream().collect(Collectors.summingDouble(i -> i.getPrice()));
+		return this.items.isEmpty() ? 0d : this.items.stream().collect(Collectors.summingDouble(ItemInterface::getPrice));
 	}
 
 }
@@ -1060,6 +1101,7 @@ which output the correct value of `26.5`
 ### Pros and Cons
 
 **\+** You can work with complex tree/hierarchical structures more conveniently: use polymorphism and recursion to your advantage
+
 **\+** You can introduce new element types into the app without breaking the existing code, which now works with the object tree
 
 **\-** It might be difficult to provide a common interface for classes whose functionality differs too much: you would need to overgeneralize the component interface, making it harder to comprehend.
@@ -1072,6 +1114,8 @@ which output the correct value of `26.5`
 
 <a name="decorator"></a>
 ## Decorator pattern [\^](#index)
+### Description
+Decorator is a structural design pattern that lets you attach new behaviors to objects by placing these objects inside special wrapper objects that contain the behaviors.
 
 ### The problem
 
@@ -1201,13 +1245,341 @@ Sending sms to +1 515-JAVA
 ### Pros and Cons
 
 **\+** an object’s behavior can be extended without making a new subclass
+
 **\+** You can add or remove responsibilities from an object at runtime
+
 **\+** Several behaviors can be combined by combining different decorators
 
 **\-** it’s hard to remove a specific wrapper from the wrappers stack.
+
 **\-** it’s hard to implement a decorator in such a way that its behavior doesn’t depend on the order in the decorators stack
 
 ### UML
 ![](img/decorator.png)
 
 ---
+<a name="facade"></a>
+## Facade pattern [\^](#index)
+### Description
+
+Facade is a structural design pattern that provides a simplified interface to a library, a framework, or any other complex set of classes.
+### The problem
+
+Usually, an enterprise application needs to work with a broad set of objects from different sources. You would need to managate them all, keeping track of initialization, execute methods in order and so on, resulting in the business logic of application classes being tightly coupled to the implementation of 3rd party classes, making maintenance hard.
+
+### The solution
+A facade is a class that provides a simple interface to complex subsystems, hiding the logic to the application and exposing only the methods the application need.
+
+Let's say that your application need to convert videos to MP4 format, and the `AwesomeVideoConverter` class (which is third party) is used. This class exposes lot of methods, most of them we don't care about.
+
+```java
+public class AwesomeVideoConverter {
+
+	private static AwesomeVideoConverter instance;
+
+	public enum FORMAT {
+		MP4, AVI
+	}
+
+	public static void instantiateVideoConverter() {
+		instance = new AwesomeVideoConverter();
+	}
+
+	public static AwesomeVideoConverter getInstance() {
+		if (instance == null) {
+			instantiateVideoConverter();
+		}
+		return instance;
+	}
+
+	public void setConfigs() {
+		// set configs here
+	}
+
+	public void convert(final String filename, final FORMAT destinationFormat) {
+		switch (destinationFormat) {
+		case AVI:
+			System.out.println("Converted " + filename + " to AVI");
+			break;
+		case MP4:
+			System.out.println("Converted " + filename + " to MP4");
+		default:
+			break;
+		}
+	}
+
+	// more methods - for encoding, compression, cropping, scaling...
+}
+```
+
+We care only of converting a video file, so we can write our `AwesomeConverterFacade` that expose a single method, `convertToMp4(...)`
+
+```java
+public class AwesomeConverterFacade {
+
+	public static void convertToMp4(final String filename) {
+		final AwesomeVideoConverter conv = AwesomeVideoConverter.getInstance();
+		conv.setConfigs();
+		conv.convert(filename, FORMAT.MP4);
+	}
+
+}
+```
+
+In this way the application can simply call:
+```java
+AwesomeConverterFacade.convertToMp4("/videos/banana.avi");
+```
+hiding completely the inner logic of the converter.
+
+While adapter pattern tries to make the existing interface usable, facade defines a new interface for existing objects. Adapter usually wraps just one object while the facade works with a more complex subsystem.
+
+
+### Pros and Cons
+
+**\+** you can isolate your code from the complexity of a subsystem
+
+**\-** a facade can become a god object coupled to all classes of an app
+
+### UML
+![](img/facade.png)
+
+---
+<a name="flyweight"></a>
+## Flyweight pattern [\^](#index)
+### Description
+Flyweight is a structural design pattern that lets you fit more objects into the available amount of RAM by sharing common parts of state between multiple objects instead of keeping all of the data in each object.
+
+### The problem
+Our application needs to draw a lot of different circles of different colours. We notice that the use of RAM is critical, so we need to save memory; we also notice that the color of the circle is the most expensive (in term of RAM usage). There is the need so to optimize memory usage.
+
+### The solution
+The first step of implementing the flyweight design pattern is to define what the *intrinsic* and *extrinsic* state of a object is.
+
+The *intrinsic* state of an object is the constant data of an object, that lives inside the objects and most of the time is immutable: other objects can only read it, not change it.
+The *extrinsic* state of an object is what depends on the context, often altered from outside the object.
+
+Let's assume that we have a `Circle` class:
+```java
+public class Circle {
+	private final String color;
+	private int x;
+	private int y;
+	private int radius;
+
+	public Circle(final String color) {
+		System.out.println("Creating circle of color : " + color);
+		this.color = color;
+	}
+
+	public void setX(final int x) {
+		this.x = x;
+	}
+
+	public void setY(final int y) {
+		this.y = y;
+	}
+
+	public void setRadius(final int radius) {
+		this.radius = radius;
+	}
+
+	public void draw() {
+		System.out.println(
+				"[Color : " + this.color + ", x : " + this.x + ", y :" + this.y + ", radius :" + this.radius + "]");
+	}
+}
+```
+
+By using the definition of *intrinsic*/*extrinsic* state we see that the `color` is *intrinsic*, while the coordinates and radius are *extrinsic*
+
+We want to generate 10 circles:
+```java
+for (int i = 0; i < 10; i++) {
+			final Circle circle = new Circle(getRandomColor());
+			circle.setX(r.nextInt(100));
+			circle.setY(r.nextInt(100));
+			circle.setRadius(50);
+			circle.draw();
+		}
+```
+
+The output is:
+```
+Creating circle of color : Red
+[Color: Red, x :91, y:22, radius:39]
+Creating circle of color : Blue
+[Color: Blue, x :52, y:15, radius:11]
+Creating circle of color : Red
+[Color: Red, x :57, y:27, radius:12]
+Creating circle of color : Red
+[Color: Red, x :57, y:3, radius:18]
+Creating circle of color : White
+[Color: White, x :4, y:10, radius:48]
+Creating circle of color : Blue
+[Color: Blue, x :3, y:27, radius:33]
+Creating circle of color : Green
+[Color: Green, x :99, y:65, radius:40]
+Creating circle of color : Black
+[Color: Black, x :25, y:34, radius:7]
+Creating circle of color : Blue
+[Color: Blue, x :69, y:76, radius:32]
+Creating circle of color : Red
+[Color: Red, x :37, y:24, radius:18]
+```
+As we can see 10 circles are created.
+
+By using a flyweight implementation of a factory, we can reduce the number of instances created:
+```java
+public class ShapeFactory {
+
+	private static final Map<String, Circle> circleMap = new HashMap<>();
+
+	public static Circle getCircle(final String color) {
+		return circleMap.computeIfAbsent(color, k -> new Circle(color));
+	}
+
+}
+```
+Now, we can use it to draw the circles:
+```java
+for (int i = 0; i < 10; i++) {
+			final Circle circle = ShapeFactory.getCircle(getRandomColor());
+			circle.setX(r.nextInt(100));
+			circle.setY(r.nextInt(100));
+			circle.setRadius(r.nextInt(50));
+			circle.draw();
+		}
+```
+
+The output in this case will show:
+```
+Creating circle of color : Black
+[Color: Black, x :71, y:92, radius:21]
+Creating circle of color : Green
+[Color: Green, x :39, y:50, radius:49]
+Creating circle of color : White
+[Color: White, x :95, y:8, radius:8]
+[Color: White, x :65, y:14, radius:49]
+[Color: Green, x :27, y:3, radius:25]
+[Color: White, x :95, y:95, radius:24]
+Creating circle of color : Blue
+[Color: Blue, x :48, y:16, radius:29]
+[Color: Black, x :70, y:81, radius:3]
+[Color: White, x :53, y:24, radius:47]
+Creating circle of color : Red
+[Color: Red, x :21, y:0, radius:42]
+```
+informing us that only 5 circles are created. 
+The memory occupation in last case is easily calculated: assuming we have 5 random colors the max number of circle in memory is 5, and it doesn't depends on how many circles I'm drawing (10, 100 or 2500).
+
+For example, if:
+- the color occupies 10KB
+- the radius occupies 1KB
+- the coordinates occupies 2KB
+
+For 10'000 circles the memory occupation is:
+- without flyweight: 10'000 * (10+1+2) = 130'000 KB = 130 MB
+- with flyweight: (10*5) + 10'000 * (2+1) = 30'0050 KB = 30 MB
+
+while the behaviour doesn't change. 
+
+As a note, since the same flyweight object can be used in different contexts, you have to make sure that its state can’t be modified.
+A flyweight should initialize its state just once, via constructor parameters. It shouldn’t expose any setters or public fields to other objects.
+
+### Pros and Cons
+**\+** you can save lots of RAM, assuming your program has tons of similar objects
+
+**\-** you might be trading RAM over CPU cycles when some of the context data needs to be recalculated each time somebody calls a flyweight method
+
+**\-** the code becomes much more complicated. New team members will always be wondering why the state of an entity was separated in such a way
+
+---
+<a name="proxy"></a>
+## Proxy pattern [\^](#index)
+### Description
+Proxy is a structural design pattern that lets you provide a substitute or placeholder for another object. A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object.
+### The problem
+Let’s say we have a class that can run some command on the system. 
+Now if we are using it, its fine but if we want to give this program to a client application, it can have severe issues because client program can issue command to delete some system files or change some settings that you don’t want.
+
+Here a proxy class can be created to provide controlled access of the program.
+### The solution
+Let's start by writing the `CommandExecutor` interface:
+```java
+public interface CommandExecutor {
+
+	public void runCommand(String cmd) throws Exception;
+
+}
+```
+
+and its basic implementation:
+```java
+public class CommandExecutorImpl implements CommandExecutor {
+
+	@Override
+	public void runCommand(final String cmd) throws IOException {
+		// actually execute the command
+		System.out.println("'" + cmd + "' command executed");
+	}
+
+}
+```
+
+We can define a proxy which implements the same interface, thus not having the need of changing the client code:
+
+```java
+public class CommandExecutorProxy implements CommandExecutor {
+
+	private boolean isAdmin;
+	private final CommandExecutor executor;
+
+	public CommandExecutorProxy(final String user, final String pwd) {
+		if ("admin".equals(user) && "a5)9=514dfm-".equals(pwd)) {
+			this.isAdmin = true;
+		}
+		this.executor = new CommandExecutorImpl();
+	}
+
+	@Override
+	public void runCommand(final String cmd) throws Exception {
+		if (this.isAdmin) {
+			this.executor.runCommand(cmd);
+		} else if (cmd.trim().startsWith("rm")) {
+			throw new Exception("rm command is not allowed for non-admin users");
+		} else {
+			this.executor.runCommand(cmd);
+		}
+	}
+
+}
+```
+
+Now, in our simple application we can simply call the proxy:
+```java
+	final CommandExecutor executor = new CommandExecutorProxy("guest", "guest_pw");
+		try {
+			executor.runCommand("ls -halt");
+			executor.runCommand(" rm -rf /");
+		} catch (final Exception e) {
+			System.out.println(e.getMessage());
+		}
+```
+```
+'ls -halt' command executed
+rm command is not allowed for non-admin users
+```
+
+### Pros and Cons
+**\+** you can control the service object without clients knowing about it
+
+**\+** you can manage the lifecycle of the service object when clients don’t care about it
+
+**\+** the proxy works even if the service object isn’t ready or is not available
+
+**\+** you can introduce new proxies without changing the service or clients
+
+**\-** the code may become more complicated since you need to introduce a lot of new classes.
+
+**\-** the response from the service might get delayed.
