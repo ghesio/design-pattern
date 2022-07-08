@@ -10,4 +10,4 @@ They are divided in 3 sub-categories:
 <a name="index"></a>
 1. [Creational patterns](creational.md)
 2. [Structural patterns](structural.md)
-3. Behavioural patterns
+3. [Behavioural patterns](behavioural.md)
