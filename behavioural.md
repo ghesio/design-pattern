@@ -1,6 +1,7 @@
 # Index
 1. [Chain of responsibility](#chain)
 2. [Command](#command)
+3. [Iterator](#iterator)
 
 
 <a name="chain"></a>
@@ -425,5 +426,230 @@ Thread pools and Java runnable use the command pattern
 - you want to parametrize objects with operations
 - there is the need to queue operations, schedule their execution, or execute them remotely
 - when you want to implement reversible operations
+
+---
+
+<a name="iterator"></a>
+# Iterator [\^](#index)
+
+## Description
+Iterator is a behavioral design pattern that lets you traverse elements of a collection without exposing its underlying representation (list, stack, tree, etc.).
+
+## The problem
+Collections are the most used data types in programming: the collection is just a container for a group of elements.
+Every collection uses a different logic to store data, like:
+-  a list
+-  a tree
+-  a graph
+-  a stack
+-  a queue
+-  ...
+
+No matter how the collection implements the grouping of element but it must provide a way to access its elements.
+This is simple if you have a list: simply loop the elements, but it's more complex for a tree: you want to traverse the tree depth-first this week, next month breath-first?
+
+Adding more and more traversal algorithms to the collection gradually blurs its primary responsibility, which is efficient data storage. 
+Additionally, some algorithms might be tailored for a specific application, so including them into a generic collection class would be weird.
+
+On the other hand, the client code that’s supposed to work with various collections don't care how they store their elements. 
+However, since collections all provide different ways of accessing their elements, you have no option other than to couple your code to the specific collection classes.
+## The solution
+The main idea of the Iterator pattern is to extract the traversal behavior of a collection into a separate object called an iterator.
+
+In addition to implementing the algorithm itself, an iterator object encapsulates all of the traversal details, such as the current position, the next one and how many elements are left till the end.
+Because of this, several iterators can go through the same collection at the same time, independently of each other.
+
+Let's consider this example.
+
+My application it's managing a list of podcasts. Every `Podcast` object has a `Topic`, representend in an enum:
+```java
+public enum Topic {
+
+	TECH, NATURE, DIY, ALL
+
+}
+```
+
+```java
+public class Podcast {
+
+	String author;
+	Topic topic;
+
+	public Podcast() {
+	}
+
+	public String getAuthor() {
+		return this.author;
+	}
+
+	public void setAuthor(final String author) {
+		this.author = author;
+	}
+
+	public Topic getTopic() {
+		return this.topic;
+	}
+
+	public void setTopic(final Topic topic) {
+		this.topic = topic;
+	}
+
+}
+
+```
+
+We start by wrapping the podcast in a podcast collection and declaring a `PodcastIterator` interface:
+
+```java
+public interface PodcastCollection {
+
+	public void addPodcast(Podcast c);
+	
+	public void removePodcast(Podcast c);
+	
+	public PodcastIterator iterator(Topic topic);
+	
+}
+
+```
+```java
+public interface PodcastIterator {
+
+	public boolean hasNext();
+
+	public Podcast next();
+
+}
+```
+
+We are giving the client the tools for iterating the collection so he doesn't need to bother to write logic to iterate the collection.
+
+Let's define a list implementation:
+
+```java
+public class PodcastCollectionList implements PodcastCollection {
+
+	private final List<Podcast> podcastList;
+
+	public PodcastCollectionList() {
+		this.podcastList = new ArrayList<>();
+	}
+
+	@Override
+	public void addPodcast(final Podcast podcast) {
+		this.podcastList.add(podcast);
+
+	}
+
+	@Override
+	public void removePodcast(final Podcast podcast) {
+		this.podcastList.remove(podcast);
+
+	}
+
+	@Override
+	public PodcastIterator iterator(final Topic topic) {
+		return new PodcastIteratorImpl(topic, this.podcastList);
+	}
+
+	private class PodcastIteratorImpl implements PodcastIterator {
+
+		private final Topic topic;
+		private final List<Podcast> podcasts;
+		private int position;
+
+		public PodcastIteratorImpl(final Topic topic, final List<Podcast> podcastList) {
+			this.topic = topic;
+			this.podcasts = podcastList;
+		}
+
+		@Override
+		public boolean hasNext() {
+			while (this.position < this.podcasts.size()) {
+				final Podcast c = this.podcasts.get(this.position);
+				if (c.getTopic().equals(this.topic) || this.topic.equals(Topic.ALL)) {
+					return true;
+				}
+				this.position++;
+			}
+			return false;
+		}
+
+		@Override
+		public Podcast next() {
+			final Podcast c = this.podcasts.get(this.position);
+			this.position++;
+			return c;
+		}
+
+	}
+
+}
+
+```
+
+We use the private inner class to avoid exposing this iterator for other implementations of our podcast collection.
+
+Now, onto the client code:
+```java
+final PodcastCollection podcasts = new PodcastCollectionList();
+
+podcasts.addPodcast(new Podcast("Mario Rossi", Topic.NATURE));
+podcasts.addPodcast(new Podcast("Giuseppe Verdi", Topic.TECH));
+podcasts.addPodcast(new Podcast("John Doe", Topic.TECH));
+podcasts.addPodcast(new Podcast("Bogus Binted", Topic.ALL));
+
+final PodcastIterator natureIterator = podcasts.iterator(Topic.NATURE);
+final PodcastIterator techIterator = podcasts.iterator(Topic.TECH);
+final PodcastIterator allIterator = podcasts.iterator(Topic.ALL);
+
+while (natureIterator.hasNext()) {
+	final Podcast p = natureIterator.next();
+	System.out.println(p.toString());
+}
+System.out.println("------");
+while (techIterator.hasNext()) {
+	final Podcast p = techIterator.next();
+	System.out.println(p.toString());
+}
+System.out.println("------");
+while (allIterator.hasNext()) {
+	final Podcast p = allIterator.next();
+	System.out.println(p.toString());
+}
+```
+Which outputs:
+```
+Podcast [author=Mario Rossi, topic=NATURE]
+------
+Podcast [author=Giuseppe Verdi, topic=TECH]
+Podcast [author=John Doe, topic=TECH]
+------
+Podcast [author=Mario Rossi, topic=NATURE]
+Podcast [author=Giuseppe Verdi, topic=TECH]
+Podcast [author=John Doe, topic=TECH]
+Podcast [author=Bogus Binted, topic=ALL]
+```
+
+
+## Pros and Cons
+
+**\+** clean up the client code and the collections by extracting bulky traversal algorithms into separate classes
+
+**\+** implement new types of collections and iterators and pass them to existing code without breaking anything
+
+**\+** terate over the same collection in parallel because each iterator object contains its own iteration state
+
+**\+** tne client doesn't need to write traversal algorithm
+
+**\-** useless if using simple collecitons
+
+**\-** less efficient than going through elements of some specialized collections directly
+## When to use
+
+- your collection has a complex data structure under the hood, but you want to hide its complexity from clients 
+- reduce duplication of the traversal code across your app
+- ou want your code to be able to traverse different data structures or when types of these structures are unknown beforehand
 
 ---
