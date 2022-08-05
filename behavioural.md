@@ -1,5 +1,7 @@
 # Index
 1. [Chain of responsibility](#chain)
+2. [Command](#command)
+
 
 <a name="chain"></a>
 # Chain of responsibility [\^](#index)
@@ -183,5 +185,245 @@ In the first example all of the handlers are called, while in the second handler
 unknown
 - the order of handlers is critical to be in a given order
 - the order of handlers can change at runtime 
+
+---
+
+<a name="command"></a>
+# Command [\^](#index)
+
+## Description
+Command is a behavioral design pattern that turns a request into a stand-alone object that contains all information about the request.
+This transformation lets you parameterize methods with different requests, delay or queue a request’s execution, and support undoable operations.
+Command design pattern is used to implement loose coupling in a request-response model.
+
+## The problem
+Let’s say we want to provide a File System utility with methods to open, write and close file. 
+This file system utility should support multiple operating systems such as Windows and Unix. To implement our File System utility, first of all we need to create the receiver classes that will actually do all the work.
+
+I can use a class for every OS:
+- WindowsFileUtility
+- UnixFileUtility
+
+This is fine. But if tomorrow I have to implement a custom behaviour for different flavour of operating systems? The number of subclass will likely explode:
+- Windows11FileUtility
+- Windows10FileUtility
+- Windows7FileUtility
+- UbuntuFileUtility
+- CentOSFileUtility
+- ...
+
+We cannot reuse the same code across all the instances (likely the command for opening a file will work very well for all the Linux flavors).
+
+## The solution
+The command pattern comes in help to loose the coupling of the command from its implementations.
+
+Let's start by defining a FilySystemReceiver:
+
+```java
+public interface FileSystemReceiver {
+
+	void openFile();
+	void writeFile();
+	void closeFile();
+}
+```
+
+The we move on defining two implementations:
+```java
+public class UnixFileSystemReceiver implements FileSystemReceiver {
+
+	@Override
+	public void openFile() {
+		System.out.println("Opening file in unix OS");
+	}
+
+	@Override
+	public void writeFile() {
+		System.out.println("Writing file in unix OS");
+	}
+
+	@Override
+	public void closeFile() {
+		System.out.println("Closing file in unix OS");
+	}
+
+}
+```
+```java
+public class WindowsFileSystemReceiver implements FileSystemReceiver {
+
+	@Override
+	public void openFile() {
+		System.out.println("Opening file in Windows OS");
+		
+	}
+
+	@Override
+	public void writeFile() {
+		System.out.println("Writing file in Windows OS");
+	}
+
+	@Override
+	public void closeFile() {
+		System.out.println("Closing file in Windows OS");
+	}
+
+}
+```
+In command pattern, the `Receiver` is the entity that actual execute the command.
+
+The command itself it's an object:
+```java
+public interface Command {
+
+	void execute();
+}
+```
+with all the concrete implementation (in our case 3):
+```java
+public class OpenFileCommand implements Command {
+
+	private FileSystemReceiver fileSystem;
+	
+	public OpenFileCommand(FileSystemReceiver fs){
+		this.fileSystem=fs;
+	}
+	@Override
+	public void execute() {
+		//open command is forwarding request to openFile method
+		this.fileSystem.openFile();
+	}
+
+}
+```
+
+```java
+public class CloseFileCommand implements Command {
+
+	private FileSystemReceiver fileSystem;
+	
+	public CloseFileCommand(FileSystemReceiver fs){
+		this.fileSystem=fs;
+	}
+	@Override
+	public void execute() {
+		this.fileSystem.closeFile();
+	}
+
+}
+```
+```java
+public class WriteFileCommand implements Command {
+
+	private FileSystemReceiver fileSystem;
+	
+	public WriteFileCommand(FileSystemReceiver fs){
+		this.fileSystem=fs;
+	}
+	@Override
+	public void execute() {
+		this.fileSystem.writeFile();
+	}
+
+}
+```
+
+These two entities are encapsulated by the `Invoker` class.
+
+```java
+		FileSystemReceiver fs = FileSystemReceiverUtil.getUnderlyingFileSystem();
+		
+		//creating command and associating with receiver
+		OpenFileCommand openFileCommand = new OpenFileCommand(fs);
+		
+		//Creating invoker and associating with Command
+		FileInvoker file = new FileInvoker(openFileCommand);
+		
+		//perform action on invoker object
+		file.execute();
+		
+		WriteFileCommand writeFileCommand = new WriteFileCommand(fs);
+		file = new FileInvoker(writeFileCommand);
+		file.execute();
+		
+		CloseFileCommand closeFileCommand = new CloseFileCommand(fs);
+		file = new FileInvoker(closeFileCommand);
+		file.execute();
+```
+
+Our application:
+```java
+public class Application {
+
+	public static void main(final String[] args) {
+		final FileSystemReceiver fs = getUnderlyingFileSystem();
+
+		// creating command and associating with receiver
+		final OpenFileCommand openFileCommand = new OpenFileCommand(fs);
+
+		// Creating invoker and associating with Command
+		FileInvoker file = new FileInvoker(openFileCommand);
+
+		// perform action on invoker object
+		file.execute();
+
+		final WriteFileCommand writeFileCommand = new WriteFileCommand(fs);
+		file = new FileInvoker(writeFileCommand);
+		file.execute();
+
+		final CloseFileCommand closeFileCommand = new CloseFileCommand(fs);
+		file = new FileInvoker(closeFileCommand);
+		file.execute();
+	}
+
+	private static FileSystemReceiver getUnderlyingFileSystem() {
+		final String osName = System.getProperty("os.name");
+		System.out.println("Underlying OS is: " + osName);
+		if (osName.contains("Windows")) {
+			return new WindowsFileSystemReceiver();
+		}
+		return new UnixFileSystemReceiver();
+	}
+
+}
+
+```
+
+shows us how the pattern works:
+```
+Underlying OS is: Windows 10
+Opening file in Windows OS
+Writing file in Windows OS
+Closing file in Windows OS
+
+```
+
+A real world analogy is going to the restaurant: you tell the waiter that you want a nice pizza and a cold beer. 
+The waiter notes the order on a piece of paper which is then read by the chef who then proceeds to bake the pizza.
+
+The piece of paper behaves like the `Command` interface: you don't need the implementation details of a command (how to bake the pizza) to use the results (eating the pizza). The waiter is the `Invoker` which dispatch the command to the `Receiver` (the chef)
+On the other way the chef doesn't need to ask you details of the pizza (thus decoupling the request - you ordering the pizza - from the response), by also implementing queue mechanism.
+
+Thread pools and Java runnable use the command pattern
+
+## Pros and Cons
+
+**\+** you can decouple classes that invoke operations from classes that perform these operations
+
+**\+** you can introduce new commands into the app without breaking existing client code
+
+**\+** you can implement undo/redo
+
+**\+** you can implement deferred execution of operations
+
+**\+** you can assemble a set of simple commands into a complex one
+
+**\-** the code becomes more complicated since you’re introducing a whole new layer between senders and receivers
+
+## When to use
+
+- you want to parametrize objects with operations
+- there is the need to queue operations, schedule their execution, or execute them remotely
+- when you want to implement reversible operations
 
 ---
