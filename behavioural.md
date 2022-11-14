@@ -4,6 +4,8 @@
 3. [Iterator](#iterator)
 4. [Mediator](#mediator)
 5. [Memento](#memento)
+6. [Observer](#observer)
+7. [State](#state)
 
 
 <a name="chain"></a>
@@ -843,7 +845,7 @@ Let's assume you are writing a text editor. Every editor that you have used impl
 The simple approach is, before performing any operation, let the editor records the state of all objects and saves it in some storage. 
 Later, when a user decides to revert an action, the editor fetches the snapshots from the history and uses it to restore the state of all objects.
 
-This may work if the objects involved in this backup and restore operation have relaxed access to fields that need to be backed up (i.e. all fields are public); which usually don't happen.
+This may work if the objects involved in this backup and restore operation have relaxed access to fields that need to be backed up (i.e. all fields are public) which usually don't happen.
 
 ## The solution
 The Memento pattern delegates creating the state snapshots to the actual owner of that state, the `originator` object. 
@@ -1010,3 +1012,383 @@ _
 - direct access to the object’s fields/getters/setters violates its encapsulation
 
 ---
+
+<a name="observer"></a>
+# Observer [\^](#index)
+
+## Description
+Observer is a behavioral design pattern that lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they’re observing.
+## The problem
+Let's assume that you have two types of objects: a `Customer` and a `Store`.
+
+The customer is interested in a particular object, like the new iPhone which will be available in the store very soon.
+
+The customer could visit the store twice a day but while the product is still en route most of the trip will be pointless.
+
+The store could, on the other hand, send tons of letters or email to all the customers when the iPhone is available, but this will result in spam for the customer not interested in the new iPhone
+
+## The solution
+
+The store in this scenario becomes the `Subject` to which the customers (the `Observer`s) will subscribe.
+
+Let's define the `Subject` and `Observer` interfaces.
+
+```java
+public interface Subject {
+
+	// methods to register and unregister observers
+	public void register(Observer obj);
+
+	public void unregister(Observer obj);
+
+	// method to notify observers of change
+	public void notifyObservers();
+
+	// method to get updates from subject
+	public Object getUpdate(Observer obj);
+
+}
+```
+```java
+public interface Observer {
+	//method to update the observer, used by subject
+	public void update();
+	
+	//attach with subject to observe
+	public void setSubject(Subject sub);
+}
+```
+
+The `Subject` interface has methods to register and unregister the observers, other the a method to notify the observers and to let them get updates from himself.
+
+We will then implement the `Store` class.
+
+```java
+public class Store implements Subject {
+
+	private final String storeName;
+	private final List<Observer> customers;
+	private String message;
+	private boolean changed;
+	private final Object mutex = new Object();
+
+	public Store(final String storeName) {
+		this.storeName = storeName;
+		this.customers = new ArrayList<>();
+	}
+
+	@Override
+	public void register(final Observer obj) {
+		synchronized (this.mutex) {
+			if (!this.customers.contains(obj)) {
+				this.customers.add(obj);
+			}
+		}
+	}
+
+	@Override
+	public void unregister(final Observer obj) {
+		synchronized (this.mutex) {
+			this.customers.remove(obj);
+		}
+	}
+
+	@Override
+	public void notifyObservers() {
+		List<Observer> customersToBeNotified = null;
+		// synchronization is used to make sure any observer registered after message is
+		// received is not notified
+		synchronized (this.mutex) {
+			if (!this.changed) {
+				return;
+			}
+			customersToBeNotified = new ArrayList<>(this.customers);
+			this.changed = false;
+		}
+		for (final Observer obj : customersToBeNotified) {
+			obj.update();
+		}
+	}
+
+	@Override
+	public Object getUpdate(final Observer obj) {
+		return this.message;
+	}
+
+	public void postMessage(final String msg) {
+		System.out.println(this.storeName + " posted " + msg);
+		this.message = msg;
+		this.changed = true;
+		this.notifyObservers();
+	}
+
+}
+```
+The `mutex` object is used to synchronize the access to the list of customers.
+
+The `Customer` class insted will be written this way:
+
+```java
+public class Customer implements Observer {
+
+	private final String name;
+	private Subject store;
+
+	public Customer(final String customerName) {
+		this.name = customerName;
+	}
+
+	@Override
+	public void update() {
+		final String msg = (String) this.store.getUpdate(this);
+		if (msg == null) {
+			System.out.println(this.name + " has no new message");
+		} else {
+			System.out.println(this.name + " received " + msg);
+		}
+	}
+
+	@Override
+	public void setSubject(final Subject sub) {
+		this.store = sub;
+	}
+
+}
+```
+
+Both classes can be extended to have multiple topics in the `Subject` (think about a news feed, with lot of different topics) and to let the `Observer` subscribe to multiple subjects (like to multiple news feed).
+
+More logic can be introduce to destroy the message once the observer consumed it.
+
+
+```java
+public class Store implements Subject {
+
+	private final String storeName;
+	private final List<Observer> customers;
+	private String message;
+	private boolean changed;
+	private final Object mutex = new Object();
+
+	public Store(final String storeName) {
+		this.storeName = storeName;
+		this.customers = new ArrayList<>();
+	}
+
+	@Override
+	public void register(final Observer obj) {
+		synchronized (this.mutex) {
+			if (!this.customers.contains(obj)) {
+				this.customers.add(obj);
+			}
+		}
+	}
+
+	@Override
+	public void unregister(final Observer obj) {
+		synchronized (this.mutex) {
+			this.customers.remove(obj);
+		}
+	}
+
+	@Override
+	public void notifyObservers() {
+		List<Observer> customersToBeNotified = null;
+		// synchronization is used to make sure any observer registered after message is
+		// received is not notified
+		synchronized (this.mutex) {
+			if (!this.changed) {
+				return;
+			}
+			customersToBeNotified = new ArrayList<>(this.customers);
+			this.changed = false;
+		}
+		for (final Observer obj : customersToBeNotified) {
+			obj.update();
+		}
+	}
+
+	@Override
+	public String getUpdate(final Observer obj) {
+		return this.message;
+	}
+
+	public void postMessage(final String msg) {
+		System.out.println("-> " + this.storeName + " posted " + msg);
+		this.message = msg;
+		this.changed = true;
+		this.notifyObservers();
+		this.message = null;
+	}
+
+	@Override
+	public String getId() {
+		return this.storeName;
+	}
+
+}
+```
+
+```java
+public class Customer implements Observer {
+
+	private final String name;
+	private List<Subject> stores;
+
+	public Customer(final String customerName) {
+		this.name = customerName;
+	}
+
+	@Override
+	public void update() {
+		for (final Subject store : this.stores) {
+			final String msg = store.getUpdate(this);
+			if (msg == null) {
+				System.out.println(this.name + " has no new message from " + store.getId());
+			} else {
+				System.out.println("<- " + this.name + " received " + msg);
+			}
+		}
+	}
+
+	@Override
+	public void addSubject(final Subject subject) {
+		if (this.stores == null) {
+			this.stores = new ArrayList<>();
+		}
+		this.stores.add(subject);
+	}
+
+}
+```
+
+Our application then will work this way:
+
+```java
+// create subject
+final Store apple = new Store("Apple store");
+final Store android = new Store("Android store");
+
+// create observers
+final Observer marco = new Customer("Marco");
+final Observer mario = new Customer("Mario");
+final Observer lorenzo = new Customer("Lorenzo");
+
+// register observers to the subjects
+apple.register(marco);
+apple.register(mario);
+apple.register(lorenzo);
+
+android.register(marco);
+
+// attach observer to subject
+marco.addSubject(apple);
+marco.addSubject(android);
+mario.addSubject(apple);
+lorenzo.addSubject(apple);
+
+// check if any update is available
+marco.update();
+System.out.println("---");
+// now send message to subjects
+apple.postMessage("The new iPhone is here!");
+System.out.println("---");
+android.postMessage("The new Google Pixel is here!");
+System.out.println("---");
+// check if any update is available
+marco.update();
+```
+
+that will output:
+```
+Marco has no new message from Apple store
+Marco has no new message from Android store
+---
+-> Apple store posted The new iPhone is here!
+<- Marco received The new iPhone is here!
+Marco has no new message from Android store
+<- Mario received The new iPhone is here!
+<- Lorenzo received The new iPhone is here!
+---
+-> Android store posted The new Google Pixel is here!
+Marco has no new message from Apple store
+<- Marco received The new Google Pixel is here!
+---
+Marco has no new message from Apple store
+Marco has no new message from Android store
+```
+
+## Pros and Cons
+
+**\+** it's possible to introduce new subscribers without having to change the publisher code (and viceversa)
+
+**\+** you can establish relations between objects at runtime
+
+**\-** caretakers should track the originator’s lifecycle to be able to destroy obsolete mementos
+
+**\-** subscribers are notified in random order
+
+## When to use
+
+- when changes to the state of one object may require changing other objects, and the actual set of objects is unknown beforehand or changes dynamically
+-  some objects in your app must observe others, but only for a limited time or in specific cases
+
+---
+
+<a name="State"></a>
+# State [\^](#index)
+
+## Description
+
+State is a behavioral design pattern that lets an object alter its behavior when its internal state changes. 
+## The problem
+Let's say you are designing a simple audio player app, that must supports the basic functions:
+- start and stop the playback
+- go to next/previous song
+- lock or unlock the GUI
+
+controlled by 4 buttons:
+- play button
+- pause button
+- lock button
+
+Let's assume our `Player` class has a structure like this:
+```java
+if(this.playButton.isPressed()){
+	if(this.currentSong.isPlaying()){
+		// do nothing
+	} else {
+		this.currentSong.play();
+	}
+} else if(this.pauseButton.isPressed()){
+	if(this.currentSong.isPlaying()){
+		this.currentSong.stop();
+	} else {
+		// do nothing
+	}
+} else ...
+
+```
+It's easy where this is going: every new button or condition bloat the logic of the player and reduce the maintenability of the code.
+
+## The solution
+
+We resort to the state pattern by using an analogy to FSM (Finite State Machine): each operation of the player is represented as a transition between internal states. For this example we will assume that the states are:
+- playing
+- ready (unlocked)
+- locked
+
+TODO
+
+
+## Pros and Cons
+
+**\+** it's possible to introduce new subscribers without having to change the publisher code (and viceversa)
+
+**\+** you can establish relations between objects at runtime
+
+**\-** caretakers should track the originator’s lifecycle to be able to destroy obsolete mementos
+
+**\-** subscribers are notified in random order
+
+## When to use
