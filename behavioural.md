@@ -1378,17 +1378,202 @@ We resort to the state pattern by using an analogy to FSM (Finite State Machine)
 - ready (unlocked)
 - locked
 
-TODO
+Instead of implementing all behaviors on its own, the original object, called context, stores a reference to one of the state objects that represents its current state, and delegates all the
+state-related work to that object.
 
+Our context will be the `AudioPlayer`:
+```java
+public class AudioPlayer {
+
+	private State state;
+
+	// other fields, like playlist(s), current song, volume, ...
+
+	public AudioPlayer() {
+		System.out.println("Starting up the player");
+		this.state = new ReadyState(this);
+	}
+
+	public void changeState(final State state) {
+		this.state = state;
+	}
+
+	public State getState() {
+		return this.state;
+	}
+
+	// accessors for states logic
+
+	public void clickLock(final boolean isKeptPressed) {
+		this.state.clickLock(isKeptPressed);
+	}
+
+	public void clickPlay(final boolean isKeptPressed) {
+		this.state.clickPlay(isKeptPressed);
+	}
+
+	public void clickNext(final boolean isKeptPressed) {
+		this.state.clickNext(isKeptPressed);
+	}
+
+	public void clickPrevious(final boolean isKeptPressed) {
+		this.state.clickPrevious(isKeptPressed);
+	}
+
+	protected void startPlayback() {
+		System.out.println("Now playing your favorite song!");
+	}
+
+	protected void nextSong() {
+		System.out.println("Skipping to next song");
+	}
+
+	protected void previousSong() {
+		System.out.println("Skipping to previous song");
+	}
+
+	protected void stopPlayback() {
+		System.out.println("Stopped playing");
+	}
+
+	protected void fastForward() {
+		System.out.println("Going fast forward 5 seconds");
+	}
+
+	protected void rewind() {
+		System.out.println("Rewinding 5 seconds");
+	}
+
+}
+```
+
+The context provides other than the logic (the methods `nextSong`, `fastForward`, ecc.) accessors for manipulating the internal private state via the buttons. 
+
+Our states will implemente the `State` interface:
+```java
+public abstract class State {
+
+	protected final AudioPlayer player;
+
+	protected State(final AudioPlayer player) {
+		this.player = player;
+	}
+
+	public abstract void clickLock(final boolean isKeptPressed);
+
+	public abstract void clickPlay(final boolean isKeptPressed);
+
+	public abstract void clickNext(final boolean isKeptPressed);
+
+	public abstract void clickPrevious(final boolean isKeptPressed);
+
+	public abstract String getStateName();
+
+}
+```
+
+and every state will be implementing this interface.
+
+Let's see for example the playing state implementation:
+```java
+public class PlayingState extends State {
+
+	public PlayingState(final AudioPlayer player) {
+		super(player);
+	}
+
+	@Override
+	public void clickLock(final boolean isKeptPressed) {
+		this.player.changeState(new LockedState(this.player));
+	}
+
+	@Override
+	public void clickPlay(final boolean isKeptPressed) {
+		this.player.stopPlayback();
+		this.player.changeState(new ReadyState(this.player));
+	}
+
+	@Override
+	public void clickNext(final boolean isKeptPressed) {
+		if (isKeptPressed) {
+			this.player.fastForward();
+		} else {
+			this.player.nextSong();
+		}
+	}
+
+	@Override
+	public void clickPrevious(final boolean isKeptPressed) {
+		if (isKeptPressed) {
+			this.player.rewind();
+		} else {
+			this.player.previousSong();
+		}
+	}
+
+	@Override
+	public String getStateName() {
+		return "playing";
+	}
+
+}
+```
+The state handles what happens when one of the button is pressed, by calling logic of the player if needed and by changing state.
+
+There are also cases in which no operation or state change is needed: for example if the player is locked if I press play button nothing happens:
+```java
+public class LockedState extends State {
+
+	public LockedState(final AudioPlayer player) {
+		super(player);
+	}
+
+	@Override
+	public void clickLock(final boolean isKeptPressed) {
+		if (this.player.getState().getStateName().equals("playing")) {
+			this.player.changeState(new PlayingState(this.player));
+		} else {
+			this.player.changeState(new ReadyState(this.player));
+		}
+
+	}
+
+	@Override
+	public void clickPlay(final boolean isKeptPressed) {
+		// locked, do nothing
+	}
+
+	@Override
+	public void clickNext(final boolean isKeptPressed) {
+		// locked, do nothing
+
+	}
+
+	@Override
+	public void clickPrevious(final boolean isKeptPressed) {
+		// locked, do nothing
+	}
+
+	@Override
+	public String getStateName() {
+		return "locked";
+	}
+
+}
+```
 
 ## Pros and Cons
 
-**\+** it's possible to introduce new subscribers without having to change the publisher code (and viceversa)
+**\+** organize the code related to particular states into separate classes
 
-**\+** you can establish relations between objects at runtime
+**\+** introduce new states without changing existing state classes or the context
 
-**\-** caretakers should track the originator’s lifecycle to be able to destroy obsolete mementos
+**\+** implify the code of the context by eliminating bulky state machine conditionals
 
-**\-** subscribers are notified in random order
+**\-** applying the pattern can be overkill if a state machine has only a few states or rarely changes
 
 ## When to use
+
+- Use this pattern when you have an object that behaves differently depending on its current state, there are lot of states and their logic changes frequently. This let you create new states without having too high manteance costs.
+- you have a class polluted with massive conditionals that alter how the class behaves according to the current values of the class’s fields
+-  you have a lot of duplicate code across similar states and transitions of a condition-based state machine

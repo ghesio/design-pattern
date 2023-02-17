@@ -8,7 +8,9 @@ public class LockedState extends State {
 
 	@Override
 	public void clickLock(final boolean isKeptPressed) {
-		if (this.player.getState().getStateName().equals("playing")) {
+		if (this.player.getState()
+				.getStateName()
+				.equals("playing")) {
 			this.player.changeState(new PlayingState(this.player));
 		} else {
 			this.player.changeState(new ReadyState(this.player));

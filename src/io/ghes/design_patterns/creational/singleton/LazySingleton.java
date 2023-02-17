@@ -4,7 +4,8 @@ public class LazySingleton {
 
 	private static LazySingleton instance;
 
-	private LazySingleton() {}
+	private LazySingleton() {
+	}
 
 	public static LazySingleton getInstance() {
 		if (instance == null) {

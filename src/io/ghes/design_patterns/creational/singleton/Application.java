@@ -1,7 +1,7 @@
 package io.ghes.design_patterns.creational.singleton;
 
 public class Application {
-	
+
 	public static void main(String[] args) {
 		// eager
 		EagerSingleton eager_1 = EagerSingleton.getInstance();

@@ -23,7 +23,8 @@ public class Box implements ItemInterface {
 	@Override
 	public Double getPrice() {
 		return this.items.isEmpty() ? 0d
-				: this.items.stream().collect(Collectors.summingDouble(ItemInterface::getPrice));
+				: this.items.stream()
+						.collect(Collectors.summingDouble(ItemInterface::getPrice));
 	}
 
 }

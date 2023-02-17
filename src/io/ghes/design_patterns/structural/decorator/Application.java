@@ -6,7 +6,7 @@ public class Application {
 		final String emailAddress = "bogus@binted.com";
 		final String slackUser = "@binted";
 		final String phoneNumber = "+1 515-JAVA";
-		
+
 		Notifier notifier = new EmailNotifier(emailAddress);
 		notifier.notifyMessage();
 		notifier = new SlackNotifier(notifier, slackUser);

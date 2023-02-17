@@ -43,7 +43,8 @@ public class PodcastCollectionList implements PodcastCollection {
 		public boolean hasNext() {
 			while (this.position < this.podcasts.size()) {
 				final Podcast c = this.podcasts.get(this.position);
-				if (c.getTopic().equals(this.topic) || this.topic.equals(Topic.ALL)) {
+				if (c.getTopic()
+						.equals(this.topic) || this.topic.equals(Topic.ALL)) {
 					return true;
 				}
 				this.position++;

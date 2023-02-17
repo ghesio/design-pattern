@@ -27,8 +27,10 @@ public class Application {
 		// we instantiate the factory
 		Application.instantiateFactory(factoryType);
 		// we then create a chair and a table
-		Application.factory.getChair().getType();
-		Application.factory.getTable().getType();
+		Application.factory.getChair()
+				.getType();
+		Application.factory.getTable()
+				.getType();
 
 	}
 

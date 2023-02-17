@@ -5,10 +5,10 @@ public class House {
 	// some example fields with default values
 	private Integer numberOfWindows = 4;
 	private Integer numberOfRooms = 2;
-	private Integer numberOfDoors = 1; 
+	private Integer numberOfDoors = 1;
 	private Boolean hasGarage = false;
 	private Boolean hasPool = false;
-	
+
 	public House() {
 		// empty constructor, properties will be set by HouseBuilder
 	}

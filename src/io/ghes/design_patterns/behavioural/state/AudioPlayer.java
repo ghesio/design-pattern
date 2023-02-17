@@ -37,28 +37,27 @@ public class AudioPlayer {
 		this.state.clickPrevious(isKeptPressed);
 	}
 
-	public void startPlayback() {
+	protected void startPlayback() {
 		System.out.println("Now playing your favorite song!");
 	}
 
-	public void nextSong() {
+	protected void nextSong() {
 		System.out.println("Skipping to next song");
 	}
 
-	public void previousSong() {
+	protected void previousSong() {
 		System.out.println("Skipping to previous song");
-
 	}
 
-	public void stopPlayback() {
+	protected void stopPlayback() {
 		System.out.println("Stopped playing");
 	}
 
-	public void fastForward() {
+	protected void fastForward() {
 		System.out.println("Going fast forward 5 seconds");
 	}
 
-	public void rewind() {
+	protected void rewind() {
 		System.out.println("Rewinding 5 seconds");
 	}
 

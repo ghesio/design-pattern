@@ -23,7 +23,6 @@ public class PlayingState extends State {
 			this.player.fastForward();
 		} else {
 			this.player.nextSong();
-			;
 		}
 	}
 
