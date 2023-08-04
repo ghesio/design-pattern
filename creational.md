@@ -96,13 +96,13 @@ Sending package via ship!
 ```
 
 ## Pros and Cons
-**\+** Tight coupling between the creator and the concrete products is avoided
+✔ Tight coupling between the creator and the concrete products is avoided
 
-**\+** The product creation is only in one point of the program so it's easier to mantain
+✔ The product creation is only in one point of the program so it's easier to mantain
 
-**\+** It's possible to introduce new type of products in the program without breaking the existent codebase
+✔ It's possible to introduce new type of products in the program without breaking the existent codebase
 
-**\-** The code may become more complicated since it's needed to create new subclasses to implement the pattern
+❌ The code may become more complicated since it's needed to create new subclasses to implement the pattern
 
 ## UML
 ![](img/factory.png)
@@ -266,15 +266,15 @@ This is an ancient table!
 
 ## Pros and Cons
 
-**\+** Products from different factories are compatible with each other
+✔ Products from different factories are compatible with each other
 
-**\+** Tight coupling between the creator and the concrete products is avoided
+✔ Tight coupling between the creator and the concrete products is avoided
 
-**\+** The product creation is only in one point of the program so it's easier to mantain
+✔ The product creation is only in one point of the program so it's easier to mantain
 
-**\+** It's possible to introduce new type of products in the program without breaking the existent codebase
+✔ It's possible to introduce new type of products in the program without breaking the existent codebase
 
-**\-** The code becomes more complicated since it's needed to create new interfaces and factories
+❌ The code becomes more complicated since it's needed to create new interfaces and factories
 
 ## UML
 ![](img/abstract_factory.png)
@@ -433,13 +433,13 @@ As the logic increases and become complex, the director is useful because instea
 
 ## Pros and Cons
 
-**\+** Object can be constructed step-by-step, construction can be defered or steps can be run recursively
+✔ Object can be constructed step-by-step, construction can be defered or steps can be run recursively
 
-**\+** Same construction code when building various representations of products can be reused
+✔ Same construction code when building various representations of products can be reused
 
-**\+** Complex construction code is isolated from application business logic
+✔ Complex construction code is isolated from application business logic
 
-**\-** The overall complexity of the code increases since the pattern requires creating multiple new classes.
+❌ The overall complexity of the code increases since the pattern requires creating multiple new classes.
 
 ## UML
 ![](img/builder.png)
@@ -532,13 +532,13 @@ Person [id=1, name=John, surname=Doe, isCloned=false]
 ```
 
 ## Pros and Cons
-**\+** you can clone objects without coupling to their concrete classes
+✔ you can clone objects without coupling to their concrete classes
 
-**\+** you can get rid of repeated initialization code in favor of cloning pre-built prototypes
+✔ you can get rid of repeated initialization code in favor of cloning pre-built prototypes
 
-**\+** you can produce complex objects more conveniently
+✔ you can produce complex objects more conveniently
 
-**\-** cloning complex objects that have circular references is very tricky
+❌ cloning complex objects that have circular references is very tricky
 
 ## UML
 ![](img/prototype.png)
@@ -698,17 +698,17 @@ public enum EnumSingleton {
 
 ## Pros and Cons
 
-**\+** You can be sure that a class has only a single instance
+✔ You can be sure that a class has only a single instance
 
-**\+** You gain a global access point to that instance
+✔ You gain a global access point to that instance
 
-**\+** If using the lazy implementation the singleton object is initialized only when it’s requested for the first time
+✔ If using the lazy implementation the singleton object is initialized only when it’s requested for the first time
 
-**\-** The Singleton pattern can mask bad design, for instance, when the components of the program know too much about each other
+❌ The Singleton pattern can mask bad design, for instance, when the components of the program know too much about each other
 
-**\-** The pattern requires special treatment in a multithreaded environment so that multiple threads won’t create a singleton object several times
+❌ The pattern requires special treatment in a multithreaded environment so that multiple threads won’t create a singleton object several times
 
-**\-** It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just don’t write the tests ;)
+❌ It may be difficult to unit test the client code of the Singleton because many test frameworks rely on inheritance when producing mock objects. Since the constructor of the singleton class is private and overriding static methods is impossible in most languages, you will need to think of a creative way to mock the singleton. Or just don’t write the tests ;)
 
 
 ## UML

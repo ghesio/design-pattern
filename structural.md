@@ -161,11 +161,11 @@ which output:
 
 ## Pros and Cons
 
-**\+** you can separate the interface or data conversion code from the primary business logic of the program
+✔ you can separate the interface or data conversion code from the primary business logic of the program
 
-**\+** you can introduce new types of adapters into the program without breaking the existing client code, as long as they work with the adapters through the client interface
+✔ you can introduce new types of adapters into the program without breaking the existing client code, as long as they work with the adapters through the client interface
 
-**\-** The overall complexity of the code increases because you need to introduce a set of new interfaces and classes. Sometimes it’s simpler just to change the service class so that it matches the rest of your code
+❌ The overall complexity of the code increases because you need to introduce a set of new interfaces and classes. Sometimes it’s simpler just to change the service class so that it matches the rest of your code
 
 
 ## UML
@@ -296,15 +296,15 @@ Circle filled with color blue
 ```
 ## Pros and Cons
 
-**\+** You can create platform-independent classes and apps
+✔ You can create platform-independent classes and apps
 
-**\+** The client code works with high-level abstractions and it's notexposed to the platform details.
+✔ The client code works with high-level abstractions and it's notexposed to the platform details.
 
-**\+** You can introduce new abstractions and implementations independently from each other
+✔ You can introduce new abstractions and implementations independently from each other
 
-**\+** You can focus on high-level logic in the abstraction and on platform details in the implementation
+✔ You can focus on high-level logic in the abstraction and on platform details in the implementation
 
-**\-** You might make the code more complicated by applying the pattern to a highly cohesive class
+❌ You might make the code more complicated by applying the pattern to a highly cohesive class
 
 ## UML
 ![](img/bridge.png)
@@ -404,11 +404,11 @@ which output the correct value of `26.5`
 
 ## Pros and Cons
 
-**\+** You can work with complex tree/hierarchical structures more conveniently: use polymorphism and recursion to your advantage
+✔ You can work with complex tree/hierarchical structures more conveniently: use polymorphism and recursion to your advantage
 
-**\+** You can introduce new element types into the app without breaking the existing code, which now works with the object tree
+✔ You can introduce new element types into the app without breaking the existing code, which now works with the object tree
 
-**\-** It might be difficult to provide a common interface for classes whose functionality differs too much: you would need to overgeneralize the component interface, making it harder to comprehend.
+❌ It might be difficult to provide a common interface for classes whose functionality differs too much: you would need to overgeneralize the component interface, making it harder to comprehend.
 
 ## UML
 ![](img/composite.png)
@@ -552,15 +552,15 @@ Sending sms to +1 515-JAVA
 
 ## Pros and Cons
 
-**\+** an object’s behavior can be extended without making a new subclass
+✔ an object’s behavior can be extended without making a new subclass
 
-**\+** You can add or remove responsibilities from an object at runtime
+✔ You can add or remove responsibilities from an object at runtime
 
-**\+** Several behaviors can be combined by combining different decorators
+✔ Several behaviors can be combined by combining different decorators
 
-**\-** it’s hard to remove a specific wrapper from the wrappers stack.
+❌ it’s hard to remove a specific wrapper from the wrappers stack.
 
-**\-** it’s hard to implement a decorator in such a way that its behavior doesn’t depend on the order in the decorators stack
+❌ it’s hard to implement a decorator in such a way that its behavior doesn’t depend on the order in the decorators stack
 
 ## UML
 ![](img/decorator.png)
@@ -651,9 +651,9 @@ While adapter pattern tries to make the existing interface usable, facade define
 
 ## Pros and Cons
 
-**\+** you can isolate your code from the complexity of a subsystem
+✔ you can isolate your code from the complexity of a subsystem
 
-**\-** a facade can become a god object coupled to all classes of an app
+❌ a facade can become a god object coupled to all classes of an app
 
 ## UML
 ![](img/facade.png)
@@ -808,11 +808,11 @@ As a note, since the same flyweight object can be used in different contexts, yo
 A flyweight should initialize its state just once, via constructor parameters. It shouldn’t expose any setters or public fields to other objects.
 
 ## Pros and Cons
-**\+** you can save lots of RAM, assuming your program has tons of similar objects
+✔ you can save lots of RAM, assuming your program has tons of similar objects
 
-**\-** you might be trading RAM over CPU cycles when some of the context data needs to be recalculated each time somebody calls a flyweight method
+❌ you might be trading RAM over CPU cycles when some of the context data needs to be recalculated each time somebody calls a flyweight method
 
-**\-** the code becomes much more complicated. New team members will always be wondering why the state of an entity was separated in such a way
+❌ the code becomes much more complicated. New team members will always be wondering why the state of an entity was separated in such a way
 
 ## When to use
   
@@ -898,17 +898,17 @@ rm command is not allowed for non-admin users
 ```
 
 ### Pros and Cons
-**\+** you can control the service object without clients knowing about it
+✔ you can control the service object without clients knowing about it
 
-**\+** you can manage the lifecycle of the service object when clients don’t care about it
+✔ you can manage the lifecycle of the service object when clients don’t care about it
 
-**\+** the proxy works even if the service object isn’t ready or is not available
+✔ the proxy works even if the service object isn’t ready or is not available
 
-**\+** you can introduce new proxies without changing the service or clients
+✔ you can introduce new proxies without changing the service or clients
 
-**\-** the code may become more complicated since you need to introduce a lot of new classes.
+❌ the code may become more complicated since you need to introduce a lot of new classes.
 
-**\-** the response from the service might get delayed.
+❌ the response from the service might get delayed.
 
 ## Use cases
   

@@ -6,6 +6,7 @@
 5. [Memento](#memento)
 6. [Observer](#observer)
 7. [State](#state)
+8. [Strategy](#strategy)
 
 
 <a name="chain"></a>
@@ -176,13 +177,13 @@ In the first example all of the handlers are called, while in the second handler
 
 ## Pros and Cons
 
-**\+** the order of handling can be controlled
+✔ the order of handling can be controlled
 
-**\+** decouple classes that invoke operations from classes that perform operations
+✔ decouple classes that invoke operations from classes that perform operations
 
-**\+** new handlers can be introduced easily
+✔ new handlers can be introduced easily
 
-**\-** some request may be not handled
+❌ some request may be not handled
 
 ## When to use
 
@@ -413,17 +414,17 @@ Thread pools and Java runnable use the command pattern
 
 ## Pros and Cons
 
-**\+** you can decouple classes that invoke operations from classes that perform these operations
+✔ you can decouple classes that invoke operations from classes that perform these operations
 
-**\+** you can introduce new commands into the app without breaking existing client code
+✔ you can introduce new commands into the app without breaking existing client code
 
-**\+** you can implement undo/redo
+✔ you can implement undo/redo
 
-**\+** you can implement deferred execution of operations
+✔ you can implement deferred execution of operations
 
-**\+** you can assemble a set of simple commands into a complex one
+✔ you can assemble a set of simple commands into a complex one
 
-**\-** the code becomes more complicated since you’re introducing a whole new layer between senders and receivers
+❌ the code becomes more complicated since you’re introducing a whole new layer between senders and receivers
 
 ## When to use
 
@@ -639,17 +640,17 @@ Podcast [author=Bogus Binted, topic=ALL]
 
 ## Pros and Cons
 
-**\+** clean up the client code and the collections by extracting bulky traversal algorithms into separate classes
+✔ clean up the client code and the collections by extracting bulky traversal algorithms into separate classes
 
-**\+** implement new types of collections and iterators and pass them to existing code without breaking anything
+✔ implement new types of collections and iterators and pass them to existing code without breaking anything
 
-**\+** terate over the same collection in parallel because each iterator object contains its own iteration state
+✔ terate over the same collection in parallel because each iterator object contains its own iteration state
 
-**\+** tne client doesn't need to write traversal algorithm
+✔ tne client doesn't need to write traversal algorithm
 
-**\-** useless if using simple collecitons
+❌ useless if using simple collecitons
 
-**\-** less efficient than going through elements of some specialized collections directly
+❌ less efficient than going through elements of some specialized collections directly
 ## When to use
 
 - your collection has a complex data structure under the hood, but you want to hide its complexity from clients 
@@ -815,15 +816,15 @@ Fan is off
 
 ## Pros and Cons
 
-**\+**  You can extract the communications between various components into a single place, making it easier to comprehend and maintain
+✔  You can extract the communications between various components into a single place, making it easier to comprehend and maintain
 
-**\+** You can introduce new mediators without having to change the actual components
+✔ You can introduce new mediators without having to change the actual components
 
-**\+** You can reduce coupling between various components of a
+✔ You can reduce coupling between various components of a
 
-**\+** You can reuse individual components more easily.
+✔ You can reuse individual components more easily.
 
-**\-** Over time a mediator can evolve into a God Object.
+❌ Over time a mediator can evolve into a God Object.
 
 ## When to use
 
@@ -998,13 +999,13 @@ _
 ```
 ## Pros and Cons
 
-**\+** you can produce snapshots of the object’s state without violating its encapsulation
+✔ you can produce snapshots of the object’s state without violating its encapsulation
 
-**\+** you can simplify the originator’s code by letting the caretaker maintain the history of the originator’s state.
+✔ you can simplify the originator’s code by letting the caretaker maintain the history of the originator’s state.
 
-**\-** caretakers should track the originator’s lifecycle to be able to destroy obsolete mementos
+❌ caretakers should track the originator’s lifecycle to be able to destroy obsolete mementos
 
-**\-** possible high ram usage
+❌ possible high ram usage
 
 ## When to use
 
@@ -1320,13 +1321,13 @@ Marco has no new message from Android store
 
 ## Pros and Cons
 
-**\+** it's possible to introduce new subscribers without having to change the publisher code (and viceversa)
+✔ it's possible to introduce new subscribers without having to change the publisher code (and viceversa)
 
-**\+** you can establish relations between objects at runtime
+✔ you can establish relations between objects at runtime
 
-**\-** caretakers should track the originator’s lifecycle to be able to destroy obsolete mementos
+❌ caretakers should track the originator’s lifecycle to be able to destroy obsolete mementos
 
-**\-** subscribers are notified in random order
+❌ subscribers are notified in random order
 
 ## When to use
 
@@ -1564,16 +1565,152 @@ public class LockedState extends State {
 
 ## Pros and Cons
 
-**\+** organize the code related to particular states into separate classes
+✔ organize the code related to particular states into separate classes
 
-**\+** introduce new states without changing existing state classes or the context
+✔ introduce new states without changing existing state classes or the context
 
-**\+** implify the code of the context by eliminating bulky state machine conditionals
+✔ implify the code of the context by eliminating bulky state machine conditionals
 
-**\-** applying the pattern can be overkill if a state machine has only a few states or rarely changes
+❌ applying the pattern can be overkill if a state machine has only a few states or rarely changes
 
 ## When to use
 
 - Use this pattern when you have an object that behaves differently depending on its current state, there are lot of states and their logic changes frequently. This let you create new states without having too high manteance costs.
 - you have a class polluted with massive conditionals that alter how the class behaves according to the current values of the class’s fields
 -  you have a lot of duplicate code across similar states and transitions of a condition-based state machine
+
+---
+
+<a name="Strategy"></a>
+# Strategy [\^](#index)
+## Description
+
+Strategy is a behavioral design pattern that lets you define a family of algorithms, put each of them into a separate class, and make their objects interchangeable
+
+## The problem
+You are developing for your company a map app  (in a parallel universe where Google or Apple Maps don't exists).
+
+The first version of the app includes the map of the city. Users love this map, so the business ask you to add a new feature: an automatic route planner from point A to B.
+
+You decide to implement the route planner only for cars: but not everybody owns a car and another feature to be added is the option of planning bike routes.
+
+The business likes it even more, and after this feature they need you to add a route planning for sighstseeing by walking.
+
+While from a business perspective the app was a success, the technical part caused you many headaches. 
+
+Each time you added a new routing algorithm, the main class of the navigator increased in size. At some point, the beast became too hard to maintain.
+
+## The solution
+
+The strategy pattern suggests that a class that does something specific in different ways and extract all of these algorithms into separate strategies.
+
+The original class, called context, must have a field for referencing one of the strategies.
+
+The context delegate the work to the strategy instead of executing on its own.
+
+Let's define our simple `Context` class
+
+```java
+public class Context {
+
+	private Strategy strategy;
+
+	public Context() {
+	}
+
+	public void setStrategy(final Strategy strategy) {
+		this.strategy = strategy;
+	}
+
+	public void execute() {
+		this.strategy.execute();
+	}
+
+}
+```
+
+This class contains the reference to the `Strategy` interface and the execution of the `execute` method from the strategy.
+
+```java
+public interface Strategy {
+
+	void execute();
+
+}
+```
+
+Our differente algorithms will be an implementation of this interface:
+
+```java
+public class WalkingStrategy implements Strategy {
+
+	public WalkingStrategy() {
+	}
+
+	@Override
+	public void execute() {
+		System.out.println("Walking around the city sightseeing!");
+	}
+
+}
+```
+```java
+public class DrivingStrategy implements Strategy {
+
+	public DrivingStrategy() {
+	}
+
+	@Override
+	public void execute() {
+		System.out.println("Driving because in a hurry.");
+	}
+
+}
+```
+
+Our application will instantiate the context, set the desired strategy/strategies and execute it/them:
+```java
+public class Application {
+
+	public static void main(final String[] args) {
+		// instantiate the context
+		final Context context = new Context();
+		// set the first strategy
+		context.setStrategy(new WalkingStrategy());
+		// execute the strategy
+		context.execute();
+		// set another strategy
+		context.setStrategy(new DrivingStrategy());
+		// execute the strategy
+		context.execute();
+	}
+
+}
+```
+
+```
+Walking around the city sightseeing!
+Driving because in a hurry.
+```
+
+The logic behind the instantiation of the strategy, if needed can be removed from the client and hidden in the context - by using something like a factory pattern.
+
+## Pros and Cons
+
+✔ you can swap algorithms used inside an object at runtime
+
+✔ you can isolate the implementation details of an algorithm from the code that uses it
+
+✔ implify the code of the context by eliminating bulky state machine conditionals
+
+✔ you can replace inheritance with composition
+
+❌ if you only have a couple of algorithms and they rarely change, there’s no real reason to overcomplicate the program 
+
+❌ clients must be aware of the differences between strategies to be able to select a proper one
+
+## When to use
+- you want to use different variants of an algorithm within an object and be able to switch from one algorithm to another during runtime - this pattern lets you indirectly alter the object’s behavior at runtime by associating it with different sub-objects which can perform specific sub-tasks in different ways.
+- you have a lot of similar classes that only differ in the way they execute some behavior.
+- it's needed to isolate the business logic of a class from the implementation details of algorithms
+  
