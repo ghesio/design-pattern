@@ -7,6 +7,7 @@
 6. [Observer](#observer)
 7. [State](#state)
 8. [Strategy](#strategy)
+9. [Template](#template)
 
 
 <a name="chain"></a>
@@ -1714,3 +1715,224 @@ The logic behind the instantiation of the strategy, if needed can be removed fro
 - you have a lot of similar classes that only differ in the way they execute some behavior.
 - it's needed to isolate the business logic of a class from the implementation details of algorithms
   
+<a name="template"></a>
+# Template [\^](#index)
+## Description
+
+Template Method is a behavioral design pattern that defines the skeleton of an algorithm in the superclass but lets subclasses override specific steps of the algorithm without changing its structure.
+
+## The problem
+
+The application you are developing right now is a information extraction/retriever of informations from documents. 
+In the first implementation only CSV files are supported.
+
+The operations done by the algorithm are:
+- open the file
+- extract data
+- parse the data
+- analyze the data
+- send the analisys to an index for retrieving
+- close the file
+
+Then the business requires to extract information from PDF, so the algorithm will be same, except for a couple of steps:
+- open the file - same as the CSV
+- extract data - customized for the PDF
+- parse the data - customized for the PDF
+- analyze the data - same as the CSV
+- send the analisys to an index for retrieving - same as the CSV
+- close the file - same as the CSV
+
+By adding another type of file, i.e. a DOCX file, the same thing happens, leading to duplicating most of the steps.
+
+## The solution
+
+The Template Method pattern suggests that you break down an algorithm into a series of steps, turn these steps into methods, and put a series of calls to these methods inside a single "template method".
+
+The steps may either be abstract, or have some default implementation (optional steps). 
+
+To use the algorithm, the client is supposed to provide its own subclass, implement all abstract steps, and override some of the optional ones if needed.
+
+Another type of step is called hook: an optional step with empty body ready for extension.
+
+We start by defining the template class:
+
+```java
+public abstract class InformationExtractor {
+
+	private final String filePath;
+
+	protected InformationExtractor(final String filePath) {
+		this.filePath = filePath;
+	}
+
+	// ----
+
+	public void runExtraction() {
+		this.openFile();
+		this.extractData();
+		this.parseData();
+		this.analyzeData();
+		this.sendDataToIndex();
+		this.optionalStep();
+		this.hook();
+		this.closeFile();
+	}
+
+	// ----
+
+	protected void openFile() {
+		System.out.println("-----------------");
+		System.out.println("Opening file @ " + this.filePath);
+	}
+
+	protected abstract void extractData();
+
+	protected abstract void parseData();
+
+	protected void analyzeData() {
+		System.out.println("Analyzing data");
+	}
+
+	protected void sendDataToIndex() {
+		System.out.println("Sending data to index");
+	}
+
+	protected void optionalStep() {
+		System.out.println("Some operation in optional step");
+	}
+
+	protected void hook() {
+	}
+
+	protected void closeFile() {
+		System.out.println("Closing file @ " + this.filePath);
+	}
+}
+```
+
+And the two implementations:
+
+```java
+public class PDFExtractor extends InformationExtractor {
+
+	public PDFExtractor(final String filePath) {
+		super(filePath);
+	}
+
+	@Override
+	protected void extractData() {
+		System.out.println("Extracting data from the PDF with its algorithm");
+	}
+
+	@Override
+	protected void parseData() {
+		System.out.println("Parsing the PDF read data");
+	}
+
+	@Override
+	protected void hook() {
+		System.out.println("Hook implemented by PDFExtractor");
+	}
+
+	@Override
+	protected void optionalStep() {
+		System.out.println("No operation in optional step by PDFExtractor");
+	}
+}
+```
+
+```java
+public class CSVExtractor extends InformationExtractor {
+
+	public CSVExtractor(final String filePath) {
+		super(filePath);
+	}
+
+	@Override
+	protected void extractData() {
+		System.out.println("Extracting data from CSV with its algorithm");
+	}
+
+	@Override
+	protected void parseData() {
+		System.out.println("Parsing the CSV read data");
+	}
+
+	@Override
+	protected void optionalStep() {
+		super.optionalStep();
+		System.out.println("Extending the optional step");
+	}
+
+}
+```
+
+As it's possible to see, only the `optionalStep` and the `hook` and the abstract method are reused, thus reusing most of the code.
+
+Our application will simply call one of the extractor:
+
+```java
+public class Application {
+
+	public static void main(final String[] args) {
+		// let's extract data from PDF file
+		final String pathToPdfFile = "./my_pdf.pdf";
+		extractDataBasedOnFileType(pathToPdfFile);
+		// let's extract data from PDF file
+		final String pathToCsvFile = "./my_csv.csv";
+		extractDataBasedOnFileType(pathToCsvFile);
+
+	}
+
+	private static void extractDataBasedOnFileType(final String filePath) {
+		InformationExtractor extractor = null;
+		if (filePath.endsWith("pdf")) {
+			extractor = new PDFExtractor(filePath);
+		}
+		if (filePath.endsWith("csv")) {
+			extractor = new CSVExtractor(filePath);
+		}
+		if (extractor == null) {
+			throw new InvalidParameterException("Unknown file type");
+		}
+		extractor.runExtraction();
+	}
+
+}
+```
+
+```
+-----------------
+Opening file @ ./my_pdf.pdf
+Extracting data from the PDF with its algorithm
+Parsing the PDF read data
+Analyzing data
+Sending data to index
+No operation in optional step by PDFExtractor
+Hook implemented by PDFExtractor
+Closing file @ ./my_pdf.pdf
+-----------------
+Opening file @ ./my_csv.csv
+Extracting data from CSV with its algorithm
+Parsing the CSV read data
+Analyzing data
+Sending data to index
+Extending the optional step
+Some operation in optional step
+Closing file @ ./my_csv.csv
+
+```
+
+## Pros and Cons
+
+✔ You can let clients override only certain parts of a large algorithm, making them less affected by changes that happen to other parts of the algorithm
+
+✔ You can pull the duplicate code into a superclass
+
+❌ Some clients may be limited by the provided skeleton of an algorithm
+
+❌ Template methods tend to be harder to maintain the more steps they have
+
+## When to use
+- use the Template Method pattern when you want to let clients extend only particular steps of an algorithm, but not the whole algorithm or its structure
+- use the pattern when you have several classes that contain almost identical algorithms with some minor differences
