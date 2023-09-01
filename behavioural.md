@@ -8,6 +8,8 @@
 7. [State](#state)
 8. [Strategy](#strategy)
 9. [Template](#template)
+10. [Visitor](#visitor)
+
 
 
 <a name="chain"></a>
@@ -1936,3 +1938,126 @@ Closing file @ ./my_csv.csv
 ## When to use
 - use the Template Method pattern when you want to let clients extend only particular steps of an algorithm, but not the whole algorithm or its structure
 - use the pattern when you have several classes that contain almost identical algorithms with some minor differences
+
+<a name="visitor"></a>
+# Visitor [\^](#index)
+## Description
+
+Visitor is a behavioral design pattern that lets you separate algorithms from the objects on which they operate.
+
+## The problem
+
+Your application manages different shapes - each of them represented by its own class - `Circle`, `Dot`, `Square`, etc. - and there's the need to export the collection of shape in XML format.
+
+A solution could be to add a new method in the `Shape` interface - `exportToXml` - and call it in the client.
+
+```java
+for(Shape shape : shapes){
+	shape.exportToXml();
+}
+```
+
+Being a good developer you think, what if a need to implement a method for exporting in `json`, `html`, `jpeg` and so on? The `Shape` interface would be bloated with logic.
+
+## The solution
+The visitor pattern suggests to implement a `Visitor` which will handle the incoming class `Shape` in our case.
+
+There are 2 ways: one where the class handling lies in the visitor class and letting the client decide which class.
+
+```java
+public class Visitor {
+
+	public Visitor() {
+
+	}
+
+	public void exportCircle(final Circle circle) {
+		// export the circle
+	}
+
+	public void exportDot(final Dot dot) {
+		// export dot
+	}
+
+	public void exportSquare(final Square square) {
+		// export square
+	}
+
+}
+```
+```java
+// ...
+for(Shape shape : shapes){
+	if(shape instanceof Circle){
+		exportCircle((Circle) shape);
+	} else if(shape instanceof Dot){
+		exportDot((Dot) shape);
+	} else if(shape instanceof Square){
+		exportSquare((Square) square);
+	} 
+}
+// ...
+```
+
+This approach works. but bloats the clients. 
+
+A better approach is to add a method to the `Shape` class that accept the visitor.
+
+```java
+// Circle.java
+
+public accept(Visitor visitor){
+	visitor.exportCircle(this);
+}
+
+```
+
+It's possible to define more visitors by declaring an interface for them - so I can instantiate different visitor inheriting from the same interface and thus having no need to modify the code in the `Shape` class. 
+
+Our application will work this way:
+```java
+	// instantiate a list of shapes (any collection works
+	final List<Shape> shapes = List.of(new Circle(), new Square(), new Dot());
+	// instantiate the XML visitor
+	final Visitor xmlVisitor = new XmlVisitor();
+	// visit the shapes
+	for (final Shape shape : shapes) {
+		shape.accept(xmlVisitor);
+	}
+	System.out.println("-----------------");
+	// instantiate the json visitor
+	final Visitor jsonVisitor = new JsonVisitor();
+	// visit the shapes
+	for (final Shape shape : shapes) {
+		shape.accept(jsonVisitor);
+	}
+```
+```
+Exporting circle as XML
+Exporting square as XML
+Exporting dot as XML
+-----------------
+Exporting circle as JSON
+Exporting square as JSON
+Exporting dot as JSON
+
+```
+
+## Pros and Cons
+
+✔ you can introduce a new behavior that can work with objects of different classes without changing these classes
+
+✔  you can move multiple versions of the same behavior into the same class
+
+✔ a visitor object can accumulate some useful information while working with various objects. This might be handy when you want to traverse some complex object structure, such as an object tree, and apply the visitor to each object of this structure.
+
+❌ You need to update all visitors each time a class gets added to or removed from the element hierarchy
+
+❌ visitors might lack the necessary access to the private fields
+and methods of the elements that they’re supposed to
+work with
+
+## When to use
+- use the visitor when you need to perform an operation on all elements of a complex object structure (for example, an object tree)
+- use the Visitor to clean up the business logic of auxiliary behaviors
+- use the pattern when a behavior makes sense only in some classes of a class hierarchy, but not in others.
