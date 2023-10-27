@@ -11,3 +11,5 @@ They are divided in 3 sub-categories:
 1. [Creational patterns](creational.md)
 2. [Structural patterns](structural.md)
 3. [Behavioural patterns](behavioural.md)
+
+Appendix - [good design principles](design_principles.md)
