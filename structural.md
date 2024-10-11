@@ -298,7 +298,7 @@ Circle filled with color blue
 
 ✔ You can create platform-independent classes and apps
 
-✔ The client code works with high-level abstractions and it's notexposed to the platform details.
+✔ The client code works with high-level abstractions and it's not exposed to the platform details.
 
 ✔ You can introduce new abstractions and implementations independently from each other
 
@@ -550,6 +550,99 @@ Sending sms to +1 515-JAVA
 
 ```
 
+Another example is a cafeteria, where every decorator uses the information from the base object.
+
+```java
+interface Beverage {
+    String getDescription();
+    double cost();
+}
+
+class Espresso implements Beverage {
+    @Override
+    public String getDescription() {
+        return "Espresso";
+    }
+
+    @Override
+    public double cost() {
+        return 1.99;
+    }
+}
+```
+```java
+abstract class BeverageDecorator implements Beverage {
+    protected Beverage beverage;
+
+    public BeverageDecorator(Beverage beverage) {
+        this.beverage = beverage;
+    }
+
+    @Override
+    public String getDescription() {
+        return beverage.getDescription();
+    }
+
+    @Override
+    public double cost() {
+        return beverage.cost();
+    }
+}
+
+class MilkDecorator extends BeverageDecorator {
+    public MilkDecorator(Beverage beverage) {
+        super(beverage);
+    }
+
+    @Override
+    public String getDescription() {
+        return beverage.getDescription() + ", Milk";
+    }
+
+    @Override
+    public double cost() {
+        return beverage.cost() + 0.50;
+    }
+}
+
+class WhippedCreamDecorator extends BeverageDecorator {
+    public WhippedCreamDecorator(Beverage beverage) {
+        super(beverage);
+    }
+
+    @Override
+    public String getDescription() {
+        return beverage.getDescription() + ", Whipped Cream";
+    }
+
+    @Override
+    public double cost() {
+        return beverage.cost() + 0.70;
+    }
+}
+
+```
+Il cui client a runtime estende il comportamento base:
+
+```java
+public class CoffeeShop {
+    public static void main(String[] args) {
+        Beverage beverage = new Espresso();
+        System.out.println(beverage.getDescription() + " $" + beverage.cost());
+
+        beverage = new MilkDecorator(beverage);
+        System.out.println(beverage.getDescription() + " $" + beverage.cost());
+
+        beverage = new WhippedCreamDecorator(beverage);
+        System.out.println(beverage.getDescription() + " $" + beverage.cost());
+    }
+}
+```
+```
+Espresso $1.99
+Espresso, Milk $2.49
+Espresso, Milk, Whipped Cream $3.19
+```
 ## Pros and Cons
 
 ✔ an object’s behavior can be extended without making a new subclass
@@ -917,6 +1010,70 @@ rm command is not allowed for non-admin users
 This is when you have a heavyweight service object that wastes system resources by being always up, even though you only need it from time to time.
 Instead of creating the object when the app launches, you can delay the object’s initialization to a time when it’s really needed.
 
+Example, loading an heavyweight image:
+```java
+interface Image {
+    void display();
+}
+
+class RealImage implements Image {
+    private String fileName;
+
+    public RealImage(String fileName) {
+        this.fileName = fileName;
+        loadImageFromDisk();
+    }
+
+    private void loadImageFromDisk() {
+        System.out.println("Loading image from disk: " + fileName);
+    }
+
+    @Override
+    public void display() {
+        System.out.println("Displaying image: " + fileName);
+    }
+}
+```
+```java
+class ProxyImage implements Image {
+    private RealImage realImage;
+    private String fileName;
+
+    public ProxyImage(String fileName) {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public void display() {
+        if (realImage == null) {
+            realImage = new RealImage(fileName); // image is lazily loaded
+        }
+        realImage.display();
+    }
+}
+```
+```java
+public class Client {
+    public static void main(String[] args) {
+        Image image = new ProxyImage("photo.jpg");
+
+        // the image will be loaded only at first call to display
+        System.out.println("Image will be displayed now:");
+        image.display();
+		// the image is already loaded and will only be displayed 
+        System.out.println("Image will be displayed again:");
+        image.display();  
+    }
+}
+```
+```
+Image will be displayed now:
+Loading image from disk: photo.jpg
+Displaying image: photo.jpg
+
+Image will be displayed again:
+Displaying image: photo.jpg
+```
 ### Protection proxy
 
 By doing access control, a protection proxy can pass the request to the service only if some criteria are met.

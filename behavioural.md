@@ -1,4 +1,5 @@
 # Index
+Patterns:
 1. [Chain of responsibility](#chain)
 2. [Command](#command)
 3. [Iterator](#iterator)
@@ -9,6 +10,8 @@
 8. [Strategy](#strategy)
 9. [Template](#template)
 10. [Visitor](#visitor)
+
+[Conclusions and differences among patterns](#conclusions)
 
 
 
@@ -340,24 +343,24 @@ public class WriteFileCommand implements Command {
 These two entities are encapsulated by the `Invoker` class.
 
 ```java
-		FileSystemReceiver fs = FileSystemReceiverUtil.getUnderlyingFileSystem();
-		
-		//creating command and associating with receiver
-		OpenFileCommand openFileCommand = new OpenFileCommand(fs);
-		
-		//Creating invoker and associating with Command
-		FileInvoker file = new FileInvoker(openFileCommand);
-		
-		//perform action on invoker object
-		file.execute();
-		
-		WriteFileCommand writeFileCommand = new WriteFileCommand(fs);
-		file = new FileInvoker(writeFileCommand);
-		file.execute();
-		
-		CloseFileCommand closeFileCommand = new CloseFileCommand(fs);
-		file = new FileInvoker(closeFileCommand);
-		file.execute();
+FileSystemReceiver fs = FileSystemReceiverUtil.getUnderlyingFileSystem();
+
+//creating command and associating with receiver
+OpenFileCommand openFileCommand = new OpenFileCommand(fs);
+
+//Creating invoker and associating with Command
+FileInvoker file = new FileInvoker(openFileCommand);
+
+//perform action on invoker object
+file.execute();
+
+WriteFileCommand writeFileCommand = new WriteFileCommand(fs);
+file = new FileInvoker(writeFileCommand);
+file.execute();
+
+CloseFileCommand closeFileCommand = new CloseFileCommand(fs);
+file = new FileInvoker(closeFileCommand);
+file.execute();
 ```
 
 Our application:
@@ -707,6 +710,7 @@ public class Fan {
         powerSupplier.turnOff();
     }
 }
+```
 ```java
 public class PowerSupplier {
     public void turnOn() {
@@ -2061,3 +2065,48 @@ work with
 - use the visitor when you need to perform an operation on all elements of a complex object structure (for example, an object tree)
 - use the Visitor to clean up the business logic of auxiliary behaviors
 - use the pattern when a behavior makes sense only in some classes of a class hierarchy, but not in others.
+
+
+<a name="conclusions"></a>
+# Conclusions and differences among patterns [\^](#index)
+Behavioral design patterns focus on the interaction and communication between objects. Some of these patterns may seem similar because they provide solutions to problems of communication or coordination between objects, but each has a specific role.
+
+Below is a comparison table that highlights the similarities and differences between the most similar behavioral patterns.
+
+| **Pattern**                 | **Purpose**                                                                                                                        | **When to use it**                                                                                                       | **Similarities**                                                    | **Differences**                                                                                             |
+|:---------------------------:|:----------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|
+| **Chain of Responsibility** | Allows multiple objects to handle a request, passing the request along a chain of handlers.                                        | When a request can be handled by multiple handlers and you don't know in advance which one will handle the request.      | Similar to Command in separating the request from the handler.      | Handlers can be dynamic, and the request passes through a chain.                                            |
+| **Command**                 | Encapsulates a request as an object, allowing operations like delay, cancellation, or undo.                                        | When you want to decouple the request sender from its receiver and support operations like undo.                         | Similar to Chain of Responsibility in separating the request.       | Each command is a separate object that can be stored and invoked later.                                     |
+| **Observer**                | Defines a one-to-many dependency between objects, where one changes and automatically notifies the others.                         | When a state change in one object needs to notify other interested objects.                                              | Similar to Mediator, both facilitate communication between objects. | Observer is direct: the observed object sends notifications directly to the observers.                      |
+| **Mediator**                | Defines a central object that controls and coordinates communication between objects.                                              | When you want to avoid a network of dependencies between objects by centralizing communication.                          | Similar to Observer in coordinating interactions.                   | Mediator centralizes communication, while Observer allows direct communication.                             |
+| **State**                   | Allows an object to change its behavior when its internal state changes.                                                           | When an object's behavior depends on its internal state, and you want to avoid lengthy conditional statements (if-else). | Similar to Strategy, both allow dynamic behavior change.            | State is tied to internal states, while Strategy focuses on interchangeable algorithms.                     |
+| **Strategy**                | Defines a family of interchangeable algorithms and separates the algorithm from the context where it is used.                      | When you have interchangeable algorithms that can be selected at runtime.                                                | Similar to State in changing an object's behavior.                  | Strategy focuses on algorithms, while State focuses on internal state changes.                              |
+| **Template Method**         | Defines the structure of an algorithm, delegating some steps to subclasses.                                                        | When you want to allow subclasses to redefine certain steps of an algorithm without changing the overall structure.      | Similar to Strategy in defining interchangeable algorithms.         | Template Method uses inheritance, while Strategy uses composition (you can change the strategy at runtime). |
+| **Visitor**                 | Separates an algorithm from the structure of the objects it operates on, allowing new operations without modifying object classes. | When you want to add new operations to a structure of objects without changing their classes.                            | Similar to Strategy in separating behavior from the object.         | Visitor traverses a structure of objects, while Strategy applies an algorithm to a single object.           |
+
+## Key Comparisons:
+
+### Chain of Responsibility vs. Command:
+**Similarity**: Both separate the request from the object that handles it.
+
+**Difference**: Chain of Responsibility passes the request along a chain of potentially multiple handlers, while Command handles the request as a specific object.
+
+### Observer vs. Mediator:
+**Similarity**: Both coordinate communication between objects.
+
+**Difference**: Observer establishes a one-to-many relationship between objects, while Mediator centralizes all communication in a mediator object.
+
+### State vs. Strategy:
+**Similarity**: Both allow changing the behavior of an object based on dynamic conditions.
+
+**Difference**: State is tied to the internal state change of an object, while Strategy allows dynamic changes in the algorithm or behavior used by an object.
+
+### Strategy vs. Template Method:
+**Similarity**: Both manage families of algorithms.
+
+**Difference**: Strategy uses composition to dynamically change algorithms, while Template Method uses inheritance to allow subclasses to redefine specific steps of an algorithm.
+
+### Strategy vs. Visitor:
+**Similarity**: Both separate behavior from structure.
+
+**Difference**: Visitor is designed to add new operations without changing the object classes and traverses a structure of objects, while Strategy focuses on dynamically choosing an algorithm for a single object.

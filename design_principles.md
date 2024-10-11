@@ -26,7 +26,7 @@ The level of reuse increases when you move from classes to patterns and finally 
 **Change** is the only constant thing in a programmer's life.
 
 - you released a video game for Windows - now you need to write a MacOS version
-- you createad nice GUI framework with square - now you now need to implement round ones 
+- you created nice GUI framework with square buttons - now you now need to implement round ones 
 - your ecommerce site sends email to customers - now you need to call them using VOIP
 
 There are several reason for this to happens.
@@ -81,7 +81,7 @@ public Double getOrderTotal(final Order order){
     return total;
 }
 
-public Double  getTaxForCountry(final Country country){
+public Double getTaxForCountry(final Country country){
     if(Country.US == order.getCountry()){
         return 0.07;
     } 
@@ -116,7 +116,7 @@ public class OrderTotalCalculator(){
         return total;
     }
 
-    public Double  getTaxForCountry(final Country country){
+    public Double getTaxForCountry(final Country country){
         if(Country.US == order.getCountry()){
             return 0.07;
         } 
@@ -238,8 +238,8 @@ Create a common base class for these two and move the similar code into it. Easy
 
 Unfortunately, inheritance comes with some downsides, that often becomes apparent only after your project has tons of interfaces:
 
-1. *a subclass can't reduce the interface of the superclass* - you have to implement all abstract methods even if you won't be using the,
-2. *when overriding methods you need to make sure that the behaviour is compatible with the base one* - objects of the subcalss may be passed to any code that expects objects of the superclass and you don't want that code to break
+1. *a subclass can't reduce the interface of the superclass* - you have to implement all abstract methods even if you won't be using them
+2. *when overriding methods you need to make sure that the behaviour is compatible with the base one* - objects of the subclass may be passed to any code that expects objects of the superclass and you don't want that code to break
 3. *inheritance breaks encapsulation of the superclass* - the internal details of the parent class become available to the subclass
 4. *subclasses are tightly coupled to superclasses* - any change in superclass may break the functionality of subclasses
 5. *reusing code through inheritance can lead to parallel inheritance hierarchies* - inheritance usually takes place in a single dimension - having more than one create complex subclass combinations
@@ -264,8 +264,7 @@ SOLID is a mnemonic for five design principles intended to make software desings
 The cost of applying these principles into a program’s architecture might be making it more complicated than it should be. 
 >
 > Striving for these principles is good,
-but always try to be pragmatic and don’t take everything writ-
-ten here as dogma.
+but always try to be pragmatic and don’t take everything written here as dogma. Not taking everything you read as dogma it's a general good life advice.
 
 ## **S**ingle responsibility principle
 

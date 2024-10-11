@@ -284,6 +284,19 @@ This is an ancient table!
 ## When to use
 
 -  the code needs to work with various family of related products: this saves us the effort to deal with concrete classes, as they might be unknown or might be extended in the future
+
+## Difference with factory
+
+|             | **Factory**                              | **Abstract Factory**                                    |
+|-------------------------------|-------------------------------------------------|---------------------------------------------------------|
+| **Scope**                     | Create a single object                         | Create a family of related objects |
+| **Flexibily**              | Facilitate extension using inheritance      | Facilitate substions of object groups    |
+| **Structure**                 | Use subclasses for concrete object | It's an interface to create object groups |
+| **Number of created products** | One per class                            | An object family               |
+| **Use**                  | You need only one type of object | You need correlated objects          |
+
+
+
 ---
 
 <a name="builder"></a>
@@ -430,6 +443,62 @@ public class HouseDirector {
 ```
 
 As the logic increases and become complex, the director is useful because instead of using concrete implementation of the built object and the builder itself we can use interface (instead of `House` use `Building` interface and instead of `HouseBuilder` use `BuildingBuilder` interface for example)
+
+Anothere good practice is to thigly couple the class with it's builder, like the example shown here (note the differences with the other builder). This is particularry useful for immutable classes.
+
+```java
+public class MyExampleClass {
+
+	private final String myString;
+	private final Boolean myBoolean;
+	private final Integer myInt;
+
+	private MyExampleClass(final Builder builder) {
+		this.myString = builder.myString;
+		this.myBoolean = builder.myBoolean;
+		this.myInt = builder.myInt;
+	}
+	
+	// ----------------
+	
+	// getters
+		
+	// ----------------
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static final class Builder {
+		private String myString;
+		private Boolean myBoolean;
+		private Integer myInt;
+
+		private Builder() {
+		}
+
+		public Builder myString(final String myString) {
+			this.myString = myString;
+			return this;
+		}
+
+		public Builder myBoolean(final Boolean myBoolean) {
+			this.myBoolean = myBoolean;
+			return this;
+		}
+
+		public Builder myInt(final Integer myInt) {
+			this.myInt = myInt;
+			return this;
+		}
+
+		public MyExampleClass build() {
+			return new MyExampleClass(this);
+		}
+	}
+
+}
+```
 
 ## Pros and Cons
 
@@ -600,7 +669,7 @@ public class StaticSingleton {
     static{
         try{
             instance = new StaticSingleton();
-        }catch(Exception e){
+        }catch (final Exception e){
             throw new RuntimeException("Exception occured in creating singleton instance");
         }
     }
